@@ -1,0 +1,4 @@
+#Do not upload anything but this file and makefile
+*
+!.gitignore
+!makefile
