@@ -1,5 +1,5 @@
 TARGET = MF-psp
-OBJS = ../main.o
+OBJS = ../src/main.o
 
 CFLAGS =
 CXXFLAGS = $(CFLAGS) -std=c++2a -fno-rtti
