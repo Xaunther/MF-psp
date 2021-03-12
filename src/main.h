@@ -6,8 +6,8 @@
 /******************************************************************************
  * main.h header
  ******************************************************************************/
-#ifndef MAIN_H
-#define MAIN_H
+#pragma once
+
 #include <psptypes.h>
 #include "common.h"
 #include "cpu.h"
@@ -158,7 +158,7 @@ extern volatile u32 real_frame_count;
 extern u32 virtual_frame_count;
 extern int date_format;
 extern MODEL_TYPE psp_model;
-extern char *lang[12];
+extern const char *lang[12];
 extern u32 g_use_home;
 
 /******************************************************************************
@@ -180,5 +180,3 @@ void raise_interrupt(IRQ_TYPE irq_raised);
 void change_ext(char *src, char *buffer, char *extension);
 u32 file_length(const char *filename);
 MODEL_TYPE get_model();
-
-#endif /* MAIN_H */

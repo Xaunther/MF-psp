@@ -7,8 +7,7 @@
  * cpu.h
  ******************************************************************************/
 
-#ifndef CPU_H
-#define CPU_H
+#pragma once
 
 #include <psptypes.h>
 // System mode and user mode are represented as the same here
@@ -159,5 +158,3 @@ extern u32 spsr[6];
 extern u32 cpu_modes[32];
 
 void init_cpu();
-
-#endif /* CPU_H */

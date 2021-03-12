@@ -9,8 +9,7 @@
  * Used to include EVERYTHING here, but I believe we can do better than that
  ******************************************************************************/
 
-#ifndef COMMON_H
-#define COMMON_H
+#pragma once
 
 #define OLD_COUNT
 
@@ -177,5 +176,3 @@ u64 dbg_time_2;
 #else
 #define DBGOUT(...)
 #endif
-
-#endif /* COMMON_H */
