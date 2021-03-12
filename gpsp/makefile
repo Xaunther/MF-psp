@@ -15,7 +15,7 @@ PREFIX          = ${shell psp-config --psp-prefix}
 TARGET = MF-psp
 
 #.o Objects to create
-OBJS = ../src/main.o
+OBJS = ../src/main.o ../src/cpu.o ../src/common.o
 
 #Add adhoc source if requested
 #ifeq ($(USE_ADHOC), 1)
