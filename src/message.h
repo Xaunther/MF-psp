@@ -301,5 +301,5 @@ enum MSG
     MSG_END
 };
 
-char *msg[MSG_END];
-char msg_data[16 * 1024]; // Data for message 16kb
+extern char *msg[MSG_END];
+extern char msg_data[16 * 1024]; // Data for message 16kb

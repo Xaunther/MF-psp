@@ -936,9 +936,13 @@ u32 map_heights[] = {256, 256, 512, 512};
         }                                                                                   \
                                                                                             \
         if (bg_control & 0x80)                                                              \
+        {                                                                                   \
             tile_render(8bpp, combine_op, alpha_op);                                        \
+        }                                                                                   \
         else                                                                                \
+        {                                                                                   \
             tile_render(4bpp, combine_op, alpha_op);                                        \
+        }                                                                                   \
     }
 
 render_scanline_text_builder(base, normal);

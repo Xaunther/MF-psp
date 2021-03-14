@@ -18,11 +18,13 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include <unistd.h>
 #include <stdio.h>
 #include <string.h>
-#include <unistd.h>
 
 #define ERR (0)
+
+void swab(const void *src, void *dest, ssize_t nbytes);
 
 static const unsigned short _00[0x100] =
     {

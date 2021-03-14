@@ -15,9 +15,9 @@ PREFIX          = ${shell psp-config --psp-prefix}
 TARGET = MF-psp
 
 #.o Objects to create
-OBJS = ../src/cheats.o ../src/common.o ../src/cpu.o ../src/draw.o ../src/dvemgr.o ../src/fbm_print.o\
- ../src/gu.o ../src/gui.o ../src/homehook.o ../src/input.o ../src/main.o ../src/memory.o\
-  ../src/message.o ../src/sound.o ../src/SystemButtons.o ../src/unicode.o ../src/video.o ../src/zip.o
+OBJS = ../src/cheats.o ../src/draw.o ../src/fbm_print.o\
+ ../src/gu.o ../src/gui.o ../src/homehook.o ../src/input.o ../src/main.o ../src/memory.o ../src/message.o\
+ ../src/sound.o ../src/SystemButtons.o ../src/unicode.o ../src/video.o ../src/zip.o
 #OBJS = ../src/control.o
 
 #Add adhoc source if requested
@@ -66,11 +66,13 @@ CFLAGS  += -DUSE_EXT_MEM
 endif
 
 #Define c++ flags and assembly flags
-CXXFLAGS = $(CFLAGS) -std=c++2a -fno-rtti
+LIBS += -lpspgu
+CXXFLAGS = $(CFLAGS) $(LIBS) -std=c++2a -fno-rtti
 ASFLAGS = $(CFLAGS)
 #Add EBOOT.PBP and the corresponding PRX module
 EXTRA_TARGETS = EBOOT.PBP
 BUILD_PRX = 1
+
 
 #Libraries to use (kai default)
 #LIBS    += -lpspgu -lpsprtc -lpspaudio -lz -lpsppower -lpspkubridge -lpspgum -lpspsystemctrl_user -lm

@@ -13,7 +13,7 @@ extern "C"
 
     void initSystemButtons(int devkit_version);
     unsigned int readSystemButtons(void);
-    unsigned int readHomeButton(void);
+    //unsigned int readHomeButton(void);
     unsigned int readVolumeButtons(void);
     unsigned int readVolUpButton(void);
     unsigned int readVolDownButton(void);

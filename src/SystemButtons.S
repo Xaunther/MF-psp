@@ -5,7 +5,7 @@
 	STUB_START "SystemButtons",0x40090000,0x000B0005
 	STUB_FUNC  0x494C24C0,initSystemButtons
 	STUB_FUNC  0xC3E44941,readSystemButtons
-	STUB_FUNC  0x40DC34E4,readHomeButton
+	//STUB_FUNC  0x40DC34E4,readHomeButton
 	STUB_FUNC  0x1BED91EE,readVolumeButtons
 	STUB_FUNC  0x4E7C27BF,readVolUpButton
 	STUB_FUNC  0x8F7FA8C3,readVolDownButton

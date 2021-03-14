@@ -19,14 +19,16 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <stdlib.h>
-#include <string.h>
+#include <pspkernel.h>
+#include <psprtc.h>
 #include <pspctrl_kernel.h>
 #include <pspctrl.h>
-#include <psptypes.h>
-#include <psprtc.h>
 #include <pspsysmem.h>
 #include <psputility_sysparam.h>
+
+#include <stdlib.h>
+#include <string.h>
+
 #include "input.h"
 #include "memory.h"
 #include "main.h"
@@ -215,7 +217,7 @@ gui_action_type get_gui_input()
 #define PSP_CTRL_ANALOG_UP (1 << 28)
 #define PSP_CTRL_ANALOG_DOWN (1 << 29)
 #define PSP_CTRL_ANALOG_LEFT (1 << 30)
-#define PSP_CTRL_ANALOG_RIGHT (1 << 31)
+#define PSP_CTRL_ANALOG_RIGHT 0b10000000000000000000000000000000
 
 u32 button_psp_mask_to_config[] =
     {
@@ -327,7 +329,7 @@ u32 update_input()
         case BUTTON_ID_MENU:
         {
             u16 *screen_copy = copy_screen();
-            u32 ret_val = menu(screen_copy);
+            u32 ret_val = menu()(screen_copy);
             free(screen_copy);
 
             return ret_val;

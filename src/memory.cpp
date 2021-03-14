@@ -18,16 +18,18 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include <pspkernel.h>
+#include <psprtc.h>
+#include <pspiofilemgr.h>
+#include <psputils.h>
+
 #include <string.h>
 #include <strings.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <psptypes.h>
-#include <psprtc.h>
-#include <pspiofilemgr.h>
-#include <psputils.h>
 #include <zlib.h>
+
 #include "cpu.h"
 #include "memory.h"
 #include "input.h"
