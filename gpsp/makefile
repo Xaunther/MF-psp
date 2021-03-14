@@ -15,9 +15,10 @@ PREFIX          = ${shell psp-config --psp-prefix}
 TARGET = MF-psp
 
 #.o Objects to create
-OBJS = ../src/cheats.o ../src/cpu.o ../src/dvemgr.o ../src/gu.o ../src/homehook.o ../src/main.o ../src/message.o \
-../src/SystemButtons.o ../src/zip.o ../src/common.o ../src/draw.o ../src/fbm_print.o ../src/gui.o  ../src/input.o \
-../src/memory.o ../src/sound.o ../src/video.o
+OBJS = ../src/cheats.o ../src/common.o ../src/cpu.o ../src/draw.o ../src/dvemgr.o ../src/fbm_print.o\
+ ../src/gu.o ../src/gui.o ../src/homehook.o ../src/input.o ../src/main.o ../src/memory.o\
+  ../src/message.o ../src/sound.o ../src/SystemButtons.o ../src/unicode.o ../src/video.o ../src/zip.o
+#OBJS = ../src/control.o
 
 #Add adhoc source if requested
 ifeq ($(USE_ADHOC), 1)
@@ -71,7 +72,7 @@ ASFLAGS = $(CFLAGS)
 EXTRA_TARGETS = EBOOT.PBP
 BUILD_PRX = 1
 
-#Libraries to use
+#Libraries to use (kai default)
 #LIBS    += -lpspgu -lpsprtc -lpspaudio -lz -lpsppower -lpspkubridge -lpspgum -lpspsystemctrl_user -lm
 #ifdef USE_ADHOC
 #LIBS    += -lpspnet -lpspwlan -lpspnet_adhoc -lpspnet_adhocctl -lpspnet_adhocmatching
