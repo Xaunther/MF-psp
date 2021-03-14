@@ -13,8 +13,8 @@ PRX_EXPORTS = exports.exp
 USE_KERNEL_LIBC = 1
 USE_KERNEL_LIBS = 1
 
-LIBDIR = ./lib
-LIBS = -lpspimpose_driver -lpspdve_driver -lpsphprm_driver
+LIBDIR =
+LIBS = -lpsphprm_driver
 
 PSPSDK=$(shell psp-config --pspsdk-path)
 include $(PSPSDK)/lib/build_prx.mak
