@@ -145,7 +145,7 @@ typedef u32 FIXED8_24;  // 32-bit integer: 8b-it real 24-bit fixed point
 #define NO 0
 #define YES 1
 
-#if USE_DEBUG
+#ifdef USE_DEBUG
 // デバッグ用の設定
 #define DBG_FILE_NAME "dbg_msg.txt"
 #define DBGOUT(...)                     \

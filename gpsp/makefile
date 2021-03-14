@@ -15,13 +15,14 @@ PREFIX          = ${shell psp-config --psp-prefix}
 TARGET = MF-psp
 
 #.o Objects to create
-OBJS = ../src/main.o ../src/cpu.o ../src/common.o
+OBJS = ../src/cheats.o ../src/cpu.o ../src/dvemgr.o ../src/gu.o ../src/homehook.o ../src/main.o ../src/message.o \
+../src/SystemButtons.o ../src/zip.o ../src/common.o ../src/draw.o ../src/fbm_print.o ../src/gui.o  ../src/input.o \
+../src/memory.o ../src/sound.o ../src/video.o
 
 #Add adhoc source if requested
-#ifeq ($(USE_ADHOC), 1)
-#OBJS        += adhoc.o
-#COMMON_FILE += adhoc.h
-#endif
+ifeq ($(USE_ADHOC), 1)
+OBJS        += adhoc.o
+endif
 
 #PSP version
 PSP_FW_VERSION = 660

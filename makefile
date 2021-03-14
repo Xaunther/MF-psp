@@ -1,11 +1,15 @@
 #Run the different makefiles
 
-all: main
+all: dvemgr main
 
-clean: main_clean
+clean: dvemgr_clean main_clean
 
+dvemgr:
+	make -C ./prx/dvemgr
 main:
 	make -C ./gpsp
 
+dvemgr_clean:
+	make -C ./prx/dvemgr clean
 main_clean:
 	make -C ./gpsp clean

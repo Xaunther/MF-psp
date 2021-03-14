@@ -9,6 +9,7 @@
 #pragma once
 
 #include <psptypes.h>
+#include <pspthreadman.h>
 #include "common.h"
 #include "cpu.h"
 /******************************************************************************
@@ -116,7 +117,7 @@ enum MODEL_TYPE
             }                                                                                             \
                                                                                                           \
             /* IRQ settings */                                                                            \
-            timer[timer_number].irq = (value >> 6) & 0x01;                                                \
+            timer[timer_number].irq = (TIMER_IRQ_TYPE)((value >> 6) & 0x01);                              \
                                                                                                           \
             /* Set counter */                                                                             \
             timer[timer_number].count = timer_reload << timer[timer_number].prescale;                     \
@@ -130,7 +131,7 @@ enum MODEL_TYPE
                 /* Since the decimal point was truncated, the processing was the same as for GBC sound */ \
                 SOUND_UPDATE_FREQUENCY_STEP(timer_number);                                                \
                 ADJUST_SOUND_BUFFER(timer_number, 0);                                                     \
-                ADJUST_SOUND_BUFFER(timer_numberm1);                                                      \
+                ADJUST_SOUND_BUFFER(timer_number, 1);                                                     \
             }                                                                                             \
         }                                                                                                 \
     }                                                                                                     \
@@ -142,6 +143,56 @@ enum MODEL_TYPE
         }                                                                                                 \
     }                                                                                                     \
     ADDRESS16(io_registers, 0x102 + (timer_number * 4)) = value;
+
+//Determine emulation cycle
+#define CHECK_COUNT(count_var)          \
+    if ((count_var) < g_execute_cycles) \
+        g_execute_cycles = count_var;
+
+#define CHECK_TIMER(timer_number)                     \
+    if (timer[timer_number].status == TIMER_PRESCALE) \
+        CHECK_COUNT(timer[timer_number].count);
+
+// Timer update
+// 0 ~ 0xFFFF in the actual machine, but takes the value of (0x10000 ~ 1) << prescale (0,6,8,10) inside gpSP
+#define update_timer(timer_number)                                                                                         \
+    if (timer[timer_number].status != TIMER_INACTIVE)                                                                      \
+    {                                                                                                                      \
+        /*If the timer is active*/                                                                                         \
+        if (timer[timer_number].status != TIMER_CASCADE)                                                                   \
+        {                                                                                                                  \
+            /* If timer is in prescale mode */                                                                             \
+            /* Change timer */                                                                                             \
+            timer[timer_number].count -= g_execute_cycles;                                                                 \
+            /* Write to register */                                                                                        \
+            io_registers[REG_TM##timer_number##D] = 0x10000 - (timer[timer_number].count >> timer[timer_number].prescale); \
+        }                                                                                                                  \
+        if (timer[timer_number].count <= 0)                                                                                \
+        {                                                                                                                  \
+            /* If the timer overflows */                                                                                   \
+            /* Turn on IRQ trigger */                                                                                      \
+            if (timer[timer_number].irq == TIMER_TRIGGER_IRQ)                                                              \
+                irq_raised |= IRQ_TIMER##timer_number;                                                                     \
+            if ((timer_number != 3) && (timer[timer_number + 1].status == TIMER_CASCADE))                                  \
+            {                                                                                                              \
+                /* When the timer is 0,1,2 and the next timer is in cascade mode*/                                         \
+                /* Change counter */                                                                                       \
+                timer[timer_number + 1].count--;                                                                           \
+                /* Write to register */                                                                                    \
+                io_registers[REG_TM0D + (timer_number + 1) * 2] = 0x10000 - (timer[timer_number + 1].count);               \
+            }                                                                                                              \
+            if (timer_number < 2)                                                                                          \
+            {                                                                                                              \
+                if (timer[timer_number].direct_sound_channels & 0x01)                                                      \
+                    sound_timer(timer[timer_number].frequency_step, 0);                                                    \
+                if (timer[timer_number].direct_sound_channels & 0x02)                                                      \
+                    sound_timer(timer[timer_number].frequency_step, 1);                                                    \
+            }                                                                                                              \
+            /* Reload timer */                                                                                             \
+            timer[timer_number].count += (timer[timer_number].reload << timer[timer_number].prescale);                     \
+            io_registers[REG_TM##timer_number##D] = 0x10000 - (timer[timer_number].count >> timer[timer_number].prescale); \
+        }                                                                                                                  \
+    }
 
 /******************************************************************************
  * Global Variables
@@ -160,6 +211,7 @@ extern int date_format;
 extern MODEL_TYPE psp_model;
 extern const char *lang[12];
 extern u32 g_use_home;
+extern u32 psp_fps_debug;
 
 /******************************************************************************
  * "Global" functions
@@ -180,3 +232,15 @@ void raise_interrupt(IRQ_TYPE irq_raised);
 void change_ext(char *src, char *buffer, char *extension);
 u32 file_length(const char *filename);
 MODEL_TYPE get_model();
+//Local functions declaration
+void vblank_interrupt_handler(u32 sub, u32 *parg);
+void init_main();
+int main(int argc, char *argv[]);
+void print_memory_stats(u32 *counter, u32 *region_stats, u8 *stats_str);
+u32 into_suspend();
+int exit_callback(int arg1, int arg2, void *common);
+SceKernelCallbackFunction power_callback(int unknown, int powerInfo, void *common);
+int CallbackThread(SceSize args, void *argp);
+int SetupCallbacks();
+int user_main(SceSize args, char *argp[]);
+void psp_exception_handler(PspDebugRegBlock *regs);
