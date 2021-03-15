@@ -17,7 +17,8 @@ TARGET = MF-psp
 #.o Objects to create
 OBJS = ../src/cheats.o ../src/draw.o ../src/fbm_print.o\
  ../src/gu.o ../src/gui.o ../src/homehook.o ../src/input.o ../src/main.o ../src/memory.o ../src/message.o\
- ../src/sound.o ../src/SystemButtons.o ../src/unicode.o ../src/video.o ../src/zip.o
+ ../src/sound.o ../src/SystemButtons.o ../src/unicode.o ../src/video.o ../src/zip.o\
+ ../src/pspDveManager.o
 #OBJS = ../src/control.o
 
 #Add adhoc source if requested
