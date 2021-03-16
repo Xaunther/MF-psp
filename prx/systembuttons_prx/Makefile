@@ -1,8 +1,6 @@
 TARGET = SystemButtons
 OBJS = main.o sceCtrl_driver_371.o
-PSP_FW_VERSION = 150
 
-INCDIR =
 CFLAGS = -O2 -G0 -Wall
 CXXFLAGS = $(CFLAGS) -fno-exceptions -fno-rtti
 ASFLAGS = $(CFLAGS)
@@ -15,7 +13,6 @@ PSP_FW_VERSION=300
 USE_KERNEL_LIBC=1
 USE_KERNEL_LIBS=1
 
-LIBDIR =
 LDFLAGS = -nostartfiles
 LIBS = -lpspsdk
 
