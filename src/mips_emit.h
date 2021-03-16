@@ -959,11 +959,11 @@ u32 arm_to_mips_reg[] =
 #define generate_block_extra_vars_arm()               \
   generate_block_extra_vars();                        \
                                                       \
-  u32 generate_load_rm_sh_flags(u32 rm);              \
-  u32 generate_load_rm_sh_no_flags(u32 rm);           \
-  u32 generate_load_offset_sh(u32 rm);                \
-  void generate_indirect_branch_arm();                \
-  void generate_indirect_branch_dual();               \
+  auto u32 generate_load_rm_sh_flags(u32 rm);         \
+  auto u32 generate_load_rm_sh_no_flags(u32 rm);      \
+  auto u32 generate_load_offset_sh(u32 rm);           \
+  auto void generate_indirect_branch_arm();           \
+  auto void generate_indirect_branch_dual();          \
                                                       \
   generate_load_rm_sh_builder(flags);                 \
   generate_load_rm_sh_builder(no_flags);              \
@@ -1037,7 +1037,7 @@ u32 arm_to_mips_reg[] =
 
 u32 execute_spsr_restore_body(u32 address)
 {
-  set_cpu_mode((CPU_MODE_TYPE)cpu_modes[reg[REG_CPSR] & 0x1F]);
+  set_cpu_mode(cpu_modes[reg[REG_CPSR] & 0x1F]);
   if ((io_registers[REG_IE] & io_registers[REG_IF]) &&
       (io_registers[REG_IME] & 0x01) && ((reg[REG_CPSR] & 0x80) == 0))
   {
@@ -1609,7 +1609,7 @@ u32 execute_store_cpsr_body(u32 _cpsr, u32 store_mask, u32 address)
   reg[REG_CPSR] = _cpsr;
   if (store_mask & 0xFF)
   {
-    set_cpu_mode((CPU_MODE_TYPE)cpu_modes[_cpsr & 0x1F]);
+    set_cpu_mode(cpu_modes[_cpsr & 0x1F]);
     if ((io_registers[REG_IE] & io_registers[REG_IF]) &&
         (io_registers[REG_IME] & 0x01) && ((_cpsr & 0x80) == 0))
     {

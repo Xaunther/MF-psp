@@ -910,32 +910,32 @@ u32 menu(u16 *original_screen)
   MENU_OPTION_TYPE *display_option;
   u32 current_option_num;
 
-  void choose_menu();
-  void menu_exit();
-  void menu_quit();
-  void menu_load();
-  void menu_restart();
-  void menu_save_ss();
-  void menu_change_state();
-  void menu_save_state();
-  void menu_load_state();
-  void menu_load_state_file();
-  void menu_load_cheat_file();
-  void menu_fix_gamepad_help();
-  void menu_fix_analog_help();
-  void submenu_graphics_sound();
-  void submenu_cheats();
-  void submenu_misc();
-  void submenu_gamepad();
-  void submenu_analog();
-  void submenu_savestate();
-  void submenu_main();
-  void reload_cheats_page();
-  void home_mode();
-  void set_gamepad();
+  auto void choose_menu();
+  auto void menu_exit();
+  auto void menu_quit();
+  auto void menu_load();
+  auto void menu_restart();
+  auto void menu_save_ss();
+  auto void menu_change_state();
+  auto void menu_save_state();
+  auto void menu_load_state();
+  auto void menu_load_state_file();
+  auto void menu_load_cheat_file();
+  auto void menu_fix_gamepad_help();
+  auto void menu_fix_analog_help();
+  auto void submenu_graphics_sound();
+  auto void submenu_cheats();
+  auto void submenu_misc();
+  auto void submenu_gamepad();
+  auto void submenu_analog();
+  auto void submenu_savestate();
+  auto void submenu_main();
+  auto void reload_cheats_page();
+  auto void home_mode();
+  auto void set_gamepad();
 #ifdef USE_ADHOC
-  void adhoc_connect_menu();
-  void adhoc_disconnect_menu();
+  auto void adhoc_connect_menu();
+  auto void adhoc_disconnect_menu();
 #endif
 
   char *gamepad_help[] =
