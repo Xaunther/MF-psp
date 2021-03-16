@@ -18,42 +18,41 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#pragma once
+#ifndef ADHOC_H
+#define ADHOC_H
 
-#include <pspkernel.h>
+#define ADHOC_DATATYPE_ANY    0xff
+#define ADHOC_DATATYPE_ACK    0x01
+#define ADHOC_DATATYPE_SYNC   0x02
+#define ADHOC_DATATYPE_INPUT  0x04
+#define ADHOC_DATATYPE_STATE  0x08
+#define ADHOC_DATATYPE_USER1  0x10
+#define ADHOC_DATATYPE_USER2  0x20
+#define ADHOC_DATATYPE_USER3  0x40
+#define ADHOC_DATATYPE_USER4  0x80
 
-#define ADHOC_DATATYPE_ANY 0xff
-#define ADHOC_DATATYPE_ACK 0x01
-#define ADHOC_DATATYPE_SYNC 0x02
-#define ADHOC_DATATYPE_INPUT 0x04
-#define ADHOC_DATATYPE_STATE 0x08
-#define ADHOC_DATATYPE_USER1 0x10
-#define ADHOC_DATATYPE_USER2 0x20
-#define ADHOC_DATATYPE_USER3 0x40
-#define ADHOC_DATATYPE_USER4 0x80
+// データの最小単位
+// 各データのサイズは異なるサイズになるように設定した方が安全
+// データサイズが0x400を超える場合は0x400に設定
+#define ADHOC_DATASIZE_ACK    (1 + sizeof(int))
+#define ADHOC_DATASIZE_SYNC   (1 + sizeof(unsigned char))
+#define ADHOC_DATASIZE_INPUT  (1 + sizeof(ADHOC_DATA))
+#define ADHOC_DATASIZE_STATE  (1 + 0x3ff)
+#define ADHOC_DATASIZE_USER1  (1)
+#define ADHOC_DATASIZE_USER2  (1)
+#define ADHOC_DATASIZE_USER3  (1)
+#define ADHOC_DATASIZE_USER4  (1)
 
-// The smallest unit of data
-// It is safer to set the size of each data to be different
-// Set to 0x400 if the data size exceeds 0x400
-#define ADHOC_DATASIZE_ACK (1 + sizeof(int))
-#define ADHOC_DATASIZE_SYNC (1 + sizeof(unsigned char))
-#define ADHOC_DATASIZE_INPUT (1 + sizeof(ADHOC_DATA))
-#define ADHOC_DATASIZE_STATE (1 + 0x3ff)
-#define ADHOC_DATASIZE_USER1 (1)
-#define ADHOC_DATASIZE_USER2 (1)
-#define ADHOC_DATASIZE_USER3 (1)
-#define ADHOC_DATASIZE_USER4 (1)
-
-#define MULTI_DATASIZE (4)
-#define MULTI_NOP 0x00
+#define MULTI_DATASIZE        (4)
+#define MULTI_NOP   0x00
 #define MULTI_START 0x01
-#define MULTI_END 0x02
-#define MULTI_SEND 0x10
-#define MULTI_RECV 0x20
-#define MULTI_KILL 0xFF
+#define MULTI_END   0x02
+#define MULTI_SEND  0x10
+#define MULTI_RECV  0x20
+#define MULTI_KILL  0xFF
 
 /******************************************************************************
- * Declaration of global function
+ * グローバル関数の宣言
  ******************************************************************************/
 u32 load_adhoc_modules(void);
 
@@ -77,3 +76,5 @@ void adhoc_exit();
 extern u32 g_multi_id;
 extern u32 g_adhoc_transfer_flag;
 extern u32 g_adhoc_link_flag;
+
+#endif

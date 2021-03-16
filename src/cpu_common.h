@@ -18,9 +18,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#pragma once
-
-#include <pspkernel.h>
+#ifndef CPU_COMMON_H
+#define CPU_COMMON_H
 
 extern const u8 bit_count[256];
 extern const u32 psr_masks[16];
+
+#endif

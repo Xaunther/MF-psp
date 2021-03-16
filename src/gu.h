@@ -18,11 +18,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#pragma once
+#ifndef GU_H
+#define GU_H
 
-#include <psptypes.h>
-
-#define FONT_WIDTH 6
+#define FONT_WIDTH  6
 #define FONT_HEIGHT 10
 
 #define GBA_SCREEN_WIDTH 240
@@ -52,96 +51,97 @@ void debug_screen_printl(const char *format, ...);
 void debug_screen_newline(u32 count);
 void debug_screen_update();
 
-enum video_scale_type
+typedef enum
 {
-    unscaled,
-    scaled_aspect,
-    fullscreen,
-    option1,
-    option2,
-};
+  unscaled,
+  scaled_aspect,
+  fullscreen,
+  option1,
+  option2,
+} video_scale_type;
 
-enum video_filter_type
+typedef enum
 {
-    filter_nearest,
-    filter_bilinear
-};
+  filter_nearest,
+  filter_bilinear
+} video_filter_type;
 
-enum VIDEO_INTERLACE_TYPE
+typedef enum
 {
-    PROGRESSIVE,
-    INTERLACE
-};
+  PROGRESSIVE,
+  INTERLACE
+} VIDEO_INTERLACE_TYPE;
 
-enum VIDEO_RATIO_TYPE
+typedef enum
 {
-    R4_3,
-    R16_9
-};
+  R4_3,
+  R16_9
+} VIDEO_RATIO_TYPE;
 
-struct SPRITE
+typedef struct
 {
-    float u1;
-    float v1;
-    float x1;
-    float y1;
-    float z1;
-    float u2;
-    float v2;
-    float x2;
-    float y2;
-    float z2;
-};
+  float u1;
+  float v1;
+  float x1;
+  float y1;
+  float z1;
+  float u2;
+  float v2;
+  float x2;
+  float y2;
+  float z2;
+} SPRITE;
 
-struct VIDEO_OUT_PARAMETER
+typedef struct
 {
-    int u;
-    int displaymode;
-    int width;
-    int height;
-    int x;
-    int y;
-    int z;
-};
+  int u;
+  int displaymode;
+  int width;
+  int height;
+  int x;
+  int y;
+  int z;
+} VIDEO_OUT_PARAMETER;
 
-struct VIEW_PORT
+typedef struct
 {
-    int x;
-    int y;
-    int width;
-    int height;
-};
+  int x;
+  int y;
+  int width;
+  int height;
+} VIEW_PORT;
 
-struct TEXTURE_BIT
+typedef struct
 {
-    u32 x;
-    u32 y;
-};
+  u32 x;
+  u32 y;
+} TEXTURE_BIT;
 
-struct TEXTURE_SIZE
-{
-    u32 pitch;
-    u32 width;
-    u32 height;
-};
 
-struct SCREEN_SIZE
+typedef struct
 {
-    u32 width;
-    u32 height;
-};
+  u32 pitch;
+  u32 width;
+  u32 height;
+} TEXTURE_SIZE;
 
-struct SCREEN_PARAMETER
+typedef struct
 {
-    VIDEO_OUT_PARAMETER video_out; /* Parameter of pspDveMgrSetVideoOut */
-    int filter[2];                 /* Filer when MENU is displayed */
-    TEXTURE_SIZE texture_size;     /* Texture size */
-    TEXTURE_BIT texture_bit;       /* Number of vertical and horizontal bits of the texture */
-    SCREEN_SIZE screen_size;       /* Display buffer size */
-    VIEW_PORT view;                /* Display range */
-    SPRITE screen_setting_1;       /* Sprite data 1 */
-    SPRITE screen_setting_2;       /* Spirte data 2 */
-};
+  u32 width;
+  u32 height;
+} SCREEN_SIZE;
+
+typedef struct
+{
+  VIDEO_OUT_PARAMETER video_out;  /* pspDveMgrSetVideoOut のパラメータ */
+  int filter[2];                  /* MENU表示時のフィルタ */
+  TEXTURE_SIZE texture_size;      /* テクスチャサイズ */
+  TEXTURE_BIT texture_bit;        /* テクスチャの縦横のビット数 */
+  SCREEN_SIZE screen_size;        /* 表示バッファのサイズ */
+  VIEW_PORT view;                 /* 表示範囲 */
+  SPRITE screen_setting_1;        /* スプライトデータ 1 */
+  SPRITE screen_setting_2;        /* スプライトデータ 1 */
+} SCREEN_PARAMETER;
 
 extern float *temp_vertex;
 extern u16 *vram_data;
@@ -171,3 +171,5 @@ void set_resolution_parameter_game(video_scale_type scale);
 void set_resolution_parameter_menu();
 
 #define UNIVERSAL_VRAM_ADDR (0x441A5C00)
+
+#endif

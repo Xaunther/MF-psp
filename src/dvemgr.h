@@ -4,16 +4,10 @@
 
 ******************************************************************************/
 
-#pragma once
+#ifndef DVEMGR_PRX_H
+#define DVEMGR_PRX_H
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
+int pspDveMgrCheckVideoOut();
+int pspDveMgrSetVideoOut(int u, int displaymode, int width, int height, int x, int y, int z);
 
-	int pspDveMgrCheckVideoOut();
-	int pspDveMgrSetVideoOut(int u, int displaymode, int width, int height, int x, int y, int z);
-
-#ifdef __cplusplus
-}
-#endif
+#endif /* DVEMGR_PRX_H */

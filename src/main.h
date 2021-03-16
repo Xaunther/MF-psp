@@ -1,201 +1,167 @@
-/* code from unofficial gamesplaySP kai
- * This is just me trying to understand how to do things for psp
- * No intention to take credit from original gpSP author nor takka
-*/
+/* unofficial gameplaySP kai
+ *
+ * Copyright (C) 2006 Exophase <exophase@gmail.com>
+ * Copyright (C) 2007 takka <takka@tfact.net>
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 2 of
+ * the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ */
 
 /******************************************************************************
- * main.h header
+ * main.h
+ * メインヘッダ
  ******************************************************************************/
-#pragma once
+#ifndef MAIN_H
+#define MAIN_H
 
-#include <psptypes.h>
-#include <pspthreadman.h>
-#include "common.h"
-#include "cpu.h"
 /******************************************************************************
- * Definition of structures, functions...
+ * マクロ等の定義
  ******************************************************************************/
-enum TIMER_STATUS_TYPE
+typedef enum
 {
-    TIMER_INACTIVE,
-    TIMER_PRESCALE,
-    TIMER_CASCADE
-};
+  TIMER_INACTIVE,
+  TIMER_PRESCALE,
+  TIMER_CASCADE
+} TIMER_STATUS_TYPE;
 
-enum TIMER_IRQ_TYPE
+typedef enum
 {
-    TIMER_NO_IRQ,
-    TIMER_TRIGGER_IRQ
-};
+  TIMER_NO_IRQ,
+  TIMER_TRIGGER_IRQ
+} TIMER_IRQ_TYPE;
 
-enum TIMER_DS_CHANNEL_TYPE
+typedef enum
 {
-    TIMER_DS_CHANNEL_NONE,
-    TIMER_DS_CHANNEL_A,
-    TIMER_DS_CHANNEL_B,
-    TIMER_DS_CHANNEL_BOTH,
-};
+  TIMER_DS_CHANNEL_NONE,
+  TIMER_DS_CHANNEL_A,
+  TIMER_DS_CHANNEL_B,
+  TIMER_DS_CHANNEL_BOTH
+} TIMER_DS_CHANNEL_TYPE;
 
-struct TIMER_TYPE
+typedef struct
 {
-    s32 count;
-    u32 reload;
-    u32 prescale;
-    u32 stop_cpu_ticks; /* NOT USE */
-    u32 frequency_step;
-    TIMER_DS_CHANNEL_TYPE direct_sound_channels;
-    TIMER_IRQ_TYPE irq;
-    TIMER_STATUS_TYPE status;
-};
+  s32 count;
+  u32 reload;
+  u32 prescale;
+  u32 stop_cpu_ticks; /* NOT USE */
+  FIXED16_16 frequency_step;
+  TIMER_DS_CHANNEL_TYPE direct_sound_channels;
+  TIMER_IRQ_TYPE irq;
+  TIMER_STATUS_TYPE status;
+} TIMER_TYPE;
 
-enum FRAMESKIP_TYPE
+typedef enum
 {
-    auto_frameskip,
-    manual_frameskip,
-    no_frameskip
-};
+  auto_frameskip,
+  manual_frameskip,
+  no_frameskip
+} FRAMESKIP_TYPE;
 
-//PSP model
-enum MODEL_TYPE
+// PSPの種類
+typedef enum
 {
-    PSP_1000, /* PSP-1000 all CFW or PSP-2000*/
-    PSP_2000  /* PSP-2000 CFW 3.71 M33-3 or higher */
-};
+  PSP_1000, /* PSP-1000 all CFW or PSP-2000*/
+  PSP_2000, /* PSP-2000 CFW 3.71 M33-3 or higher */
+} MODEL_TYPE;
 
-// TODO (Translated from Japanese with translate) Reexamine the processing around the timer counter
-// Counter setting when reloading the timer (not set to the timer at this point)
-// Set to counter when timer starts
-// However, when accessing 32bit, it will be set to the timer immediately.
-// 0 ~ 0xFFFF in the actual machine, but takes the value of (0x10000 ~ 1) << prescale (0,6,8,10) inside gpSP
-// Shifted by prescale when reloading to each counter
-// TODO: It is necessary to separate processing for 32bit access and 8 / 16bit access
-// 8/16 No need to call for bit access?
+// TODO:タイマーカウンタ周りの処理は再検討
 
-#define COUNT_TIMER(timer_number)                      \
-    timer[timer_number].reload = 0x10000 - value;      \
-    if (timer_number < 2)                              \
-    {                                                  \
-        u32 timer_reload = timer[timer_number].reload; \
-        SOUND_UPDATE_FREQUENCY_STEP(timer_number);     \
-    }
+// タイマーリロード時のカウンタの設定(この時点ではタイマーにセットされない)
+// タイマースタート時にカウンタに設定される
+// ただし、32bitアクセス時には即座にタイマーにセットされる
+// 実機では0~0xFFFFだが、gpSP内部では (0x10000~1)<<prescale(0,6,8,10)の値をとる
+// 各カウンターにリロードする際にprescale分シフトされる
+// TODO:32bitアクセスと8/16bitアクセスで処理を分ける必要がある
+// 8/16ビットアクセス時には呼び出す必要がない？
+#define COUNT_TIMER(timer_number)                                             \
+  timer[timer_number].reload = 0x10000 - value;                               \
+  if(timer_number < 2)                                                        \
+  {                                                                           \
+    u32 timer_reload =                                                        \
+     timer[timer_number].reload;              \
+    SOUND_UPDATE_FREQUENCY_STEP(timer_number);                                \
+  }                                                                           \
 
-// Adjust timer value
-// TODO: Adjustment required
-#define ADJUST_SOUND_BUFFER(timer_number, channel)                           \
-    if (timer[timer_number].direct_sound_channels & (0x01 << channel))       \
-    {                                                                        \
-        direct_sound_channel[channel].buffer_index = gbc_sound_buffer_index; \
-    }
+// タイマーの値の調整
+// TODO:調整必要
+#define ADJUST_SOUND_BUFFER(timer_number, channel)                            \
+  if(timer[timer_number].direct_sound_channels & (0x01 << channel))           \
+  {                                                                           \
+    direct_sound_channel[channel].buffer_index = gbc_sound_buffer_index;      \
+  }                                                                           \
 
-//Timer access and count start processing
-
-#define TRIGGER_TIMER(timer_number)                                                                       \
-    if (value & 0x80)                                                                                     \
-    {                                                                                                     \
-        /*When the start bit is 1*/                                                                       \
-        if (timer[timer_number].status == TIMER_INACTIVE)                                                 \
-        {                                                                                                 \
-            /* If the timer is stopped */                                                                 \
-            /* Make various settings and activate the timer */                                            \
-            /* Read reload value */                                                                       \
-            u32 timer_reload = timer[timer_number].reload;                                                \
-            /* Determine if it is in cascade mode (other than timer 0) */                                 \
-            if (((value >> 2) & 0x01) && (timer_number != 0))                                             \
-            {                                                                                             \
-                /* Cascade mode */                                                                        \
-                timer[timer_number].status = TIMER_CASCADE;                                               \
-                /* Prescale settings */                                                                   \
-                timer[timer_number].prescale = 0;                                                         \
-            }                                                                                             \
-            else                                                                                          \
-            {                                                                                             \
-                /* Prescale mode */                                                                       \
-                timer[timer_number].status = TIMER_PRESCALE;                                              \
-                u32 prescale = prescale_table[value & 0x03];                                              \
-                /* Prescale settings */                                                                   \
-                timer[timer_number].prescale = prescale;                                                  \
-            }                                                                                             \
-                                                                                                          \
-            /* IRQ settings */                                                                            \
-            timer[timer_number].irq = (TIMER_IRQ_TYPE)((value >> 6) & 0x01);                              \
-                                                                                                          \
-            /* Set counter */                                                                             \
-            timer[timer_number].count = timer_reload << timer[timer_number].prescale;                     \
-            ADDRESS16(io_registers, 0x100 + (timer_number * 4)) = 0x10000 - timer_reload;                 \
-                                                                                                          \
-            if (timer[timer_number].count < g_execute_cycles)                                             \
-                g_execute_cycles = timer[timer_number].count;                                             \
-                                                                                                          \
-            if (timer_number < 2)                                                                         \
-            {                                                                                             \
-                /* Since the decimal point was truncated, the processing was the same as for GBC sound */ \
-                SOUND_UPDATE_FREQUENCY_STEP(timer_number);                                                \
-                ADJUST_SOUND_BUFFER(timer_number, 0);                                                     \
-                ADJUST_SOUND_BUFFER(timer_number, 1);                                                     \
-            }                                                                                             \
-        }                                                                                                 \
-    }                                                                                                     \
-    else                                                                                                  \
-    {                                                                                                     \
-        if (timer[timer_number].status != TIMER_INACTIVE)                                                 \
-        {                                                                                                 \
-            timer[timer_number].status = TIMER_INACTIVE;                                                  \
-        }                                                                                                 \
-    }                                                                                                     \
-    ADDRESS16(io_registers, 0x102 + (timer_number * 4)) = value;
-
-//Determine emulation cycle
-#define CHECK_COUNT(count_var)          \
-    if ((count_var) < g_execute_cycles) \
-        g_execute_cycles = count_var;
-
-#define CHECK_TIMER(timer_number)                     \
-    if (timer[timer_number].status == TIMER_PRESCALE) \
-        CHECK_COUNT(timer[timer_number].count);
-
-// Timer update
-// 0 ~ 0xFFFF in the actual machine, but takes the value of (0x10000 ~ 1) << prescale (0,6,8,10) inside gpSP
-#define update_timer(timer_number)                                                                                         \
-    if (timer[timer_number].status != TIMER_INACTIVE)                                                                      \
-    {                                                                                                                      \
-        /*If the timer is active*/                                                                                         \
-        if (timer[timer_number].status != TIMER_CASCADE)                                                                   \
-        {                                                                                                                  \
-            /* If timer is in prescale mode */                                                                             \
-            /* Change timer */                                                                                             \
-            timer[timer_number].count -= g_execute_cycles;                                                                 \
-            /* Write to register */                                                                                        \
-            io_registers[REG_TM##timer_number##D] = 0x10000 - (timer[timer_number].count >> timer[timer_number].prescale); \
-        }                                                                                                                  \
-        if (timer[timer_number].count <= 0)                                                                                \
-        {                                                                                                                  \
-            /* If the timer overflows */                                                                                   \
-            /* Turn on IRQ trigger */                                                                                      \
-            if (timer[timer_number].irq == TIMER_TRIGGER_IRQ)                                                              \
-                irq_raised |= IRQ_TIMER##timer_number;                                                                     \
-            if ((timer_number != 3) && (timer[timer_number + 1].status == TIMER_CASCADE))                                  \
-            {                                                                                                              \
-                /* When the timer is 0,1,2 and the next timer is in cascade mode*/                                         \
-                /* Change counter */                                                                                       \
-                timer[timer_number + 1].count--;                                                                           \
-                /* Write to register */                                                                                    \
-                io_registers[REG_TM0D + (timer_number + 1) * 2] = 0x10000 - (timer[timer_number + 1].count);               \
-            }                                                                                                              \
-            if (timer_number < 2)                                                                                          \
-            {                                                                                                              \
-                if (timer[timer_number].direct_sound_channels & 0x01)                                                      \
-                    sound_timer(timer[timer_number].frequency_step, 0);                                                    \
-                if (timer[timer_number].direct_sound_channels & 0x02)                                                      \
-                    sound_timer(timer[timer_number].frequency_step, 1);                                                    \
-            }                                                                                                              \
-            /* Reload timer */                                                                                             \
-            timer[timer_number].count += (timer[timer_number].reload << timer[timer_number].prescale);                     \
-            io_registers[REG_TM##timer_number##D] = 0x10000 - (timer[timer_number].count >> timer[timer_number].prescale); \
-        }                                                                                                                  \
-    }
+// タイマーのアクセスとカウント開始処理
+#define TRIGGER_TIMER(timer_number)                                           \
+  if(value & 0x80)                                                            \
+  {                                                                           \
+    /* スタートビットが”1”だった場合 */                                     \
+    if(timer[timer_number].status == TIMER_INACTIVE)                          \
+    {                                                                         \
+      /* タイマーが停止していた場合 */                                        \
+      /* 各種設定をして、タイマー作動 */                                      \
+                                                                              \
+      /* リロード値を読み込む */                                              \
+      u32 timer_reload = timer[timer_number].reload;                          \
+                                                                              \
+      /* カスケードモードか判別(タイマー0以外)*/                              \
+      if(((value >> 2) & 0x01) && (timer_number != 0))                        \
+      {                                                                       \
+        /* カスケードモード */                                                \
+        timer[timer_number].status = TIMER_CASCADE;                           \
+        /* プリスケールの設定 */                                              \
+        timer[timer_number].prescale = 0;                                     \
+      }                                                                       \
+      else                                                                    \
+      {                                                                       \
+        /* プリスケールモード */                                              \
+        timer[timer_number].status = TIMER_PRESCALE;                          \
+        u32 prescale = prescale_table[value & 0x03];                          \
+        /* プリスケールの設定 */                                              \
+        timer[timer_number].prescale = prescale;                              \
+      }                                                                       \
+                                                                              \
+      /* IRQの設定 */                                                         \
+      timer[timer_number].irq = (value >> 6) & 0x01;                          \
+                                                                              \
+      /* カウンタを設定 */                                                    \
+      timer[timer_number].count = timer_reload << timer[timer_number].prescale; \
+      ADDRESS16(io_registers, 0x100 + (timer_number * 4)) =                   \
+      0x10000 - timer_reload;                                                 \
+                                                                              \
+      if(timer[timer_number].count < g_execute_cycles)                        \
+        g_execute_cycles = timer[timer_number].count;                         \
+                                                                              \
+      if(timer_number < 2)                                                    \
+      {                                                                       \
+        /* 小数点以下を切り捨てていたので、GBCサウンドと同様の処理にした*/    \
+        SOUND_UPDATE_FREQUENCY_STEP(timer_number);                            \
+        ADJUST_SOUND_BUFFER(timer_number, 0);                                 \
+        ADJUST_SOUND_BUFFER(timer_number, 1);                                 \
+      }                                                                       \
+    }                                                                         \
+  }                                                                           \
+  else                                                                        \
+  {                                                                           \
+    if(timer[timer_number].status != TIMER_INACTIVE)                          \
+    {                                                                         \
+      timer[timer_number].status = TIMER_INACTIVE;                            \
+    }                                                                         \
+  }                                                                           \
+  ADDRESS16(io_registers, 0x102 + (timer_number * 4)) = value;                \
 
 /******************************************************************************
- * Global Variables
+ * グローバル変数の宣言
  ******************************************************************************/
 extern u32 g_execute_cycles;
 //extern u32 global_cycles_per_instruction;
@@ -209,24 +175,14 @@ extern volatile u32 real_frame_count;
 extern u32 virtual_frame_count;
 extern int date_format;
 extern MODEL_TYPE psp_model;
-extern const char *lang[12];
+extern char *lang[12];
 extern u32 g_use_home;
-extern u32 psp_fps_debug;
 
 /******************************************************************************
- * Global functions
+ * グローバル関数の宣言
  ******************************************************************************/
-//Func
 void set_cpu_clock(u32 clock);
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-    u32 update_gba();
-    void set_cpu_mode(CPU_MODE_TYPE new_mode);
-#ifdef __cplusplus
-}
-#endif
+u32 update_gba();
 void reset_gba();
 void synchronize();
 void quit(u32 mode);
@@ -236,7 +192,11 @@ void main_write_mem_savestate(u32 ver);
 void main_get_size_savestate(u32 ver);
 
 void error_msg(char *text);
+void set_cpu_mode(CPU_MODE_TYPE new_mode);
 void raise_interrupt(IRQ_TYPE irq_raised);
 void change_ext(char *src, char *buffer, char *extension);
 u32 file_length(const char *filename);
 MODEL_TYPE get_model();
+
+#endif /* MAIN_H */
+

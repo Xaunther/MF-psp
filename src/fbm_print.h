@@ -3,35 +3,37 @@
   FBM fonts print string headder
                                                                       by mok
 ****************************************************************************/
-#pragma once
+#ifndef __FBM_PRINT__
+#define __FBM_PRINT__
 
-#include <psptypes.h>
 
-#define FBM_FONT_FILL (0x01) // Fill Font(normal)
-#define FBM_BACK_FILL (0x10) // Fill BackGrand
+#define FBM_FONT_FILL	(0x01)		// Fill Font(normal)
+#define FBM_BACK_FILL	(0x10)		// Fill BackGrand
 
-struct fbm_control_t
+
+typedef struct
 {
-    u16 fontcnt;
-    u16 mapcnt;
-    u16 defaultchar;
-    u8 width;
-    u8 height;
-    u8 byteperchar;
-};
+	u16 fontcnt;
+	u16 mapcnt;
+	u16 defaultchar;
+	u8  width;
+	u8  height;
+	u8  byteperchar;
+} fbm_control_t;
 
-struct fbm_map_t
+typedef struct
 {
-    u16 start;
-    u16 end;
-    u16 distance;
-};
+	u16 start;
+	u16 end;
+	u16 distance;
+} fbm_map_t;
 
-struct fbm_font_t
+typedef struct
 {
-    u8 *width;
-    u8 *font;
-};
+	u8  *width;
+	u8  *font;
+} fbm_font_t;
+
 
 /////////////////////////////////////////////////////////////////////////////
 // Fbm Font Initialize
@@ -71,3 +73,5 @@ int fbm_printVRAM(void *vram, int bufferwidth, int x, int y, char *str, u32 colo
 // rate: Mix Rate (0-100 or -1--101)
 /////////////////////////////////////////////////////////////////////////////
 void fbm_printSUB(void *vram, int bufferwidth, int index, int isdouble, int height, int byteperline, u32 color, u32 back, u8 fill);
+
+#endif

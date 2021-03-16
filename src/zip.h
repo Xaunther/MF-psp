@@ -19,10 +19,12 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#pragma once
-
-#include <psptypes.h>
+#ifndef ZIP_H
+#define ZIP_H
 
 #define ZIP_TMP "ZIP_TMP.gba"
 
 s32 load_file_zip(char *filename);
+
+#endif
+

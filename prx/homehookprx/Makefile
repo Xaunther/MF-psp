@@ -14,6 +14,7 @@ PSP_FW_VERSION=300
 USE_KERNEL_LIBC=1
 USE_KERNEL_LIBS=1
 
+LIBDIR =
 LDFLAGS = -nostartfiles
 LIBS = -lpspsdk
 
@@ -24,7 +25,7 @@ all:
 	psp-build-exports -s $(PRX_EXPORTS)
 	@cp $(TARGET).prx ../../gpsp
 	@cp $(TARGET).S ../../src
-	@cp $(TARGET).h ../../src
+#	@cp $(TARGET).h ../../src
 	@rm -f $(TARGET).prx
 	@rm -f $(TARGET).S
 	@rm -f *.o

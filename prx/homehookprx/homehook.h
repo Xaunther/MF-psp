@@ -4,14 +4,10 @@
 
 ******************************************************************************/
 
-#pragma once
+#ifndef HOMEHOOK_PRX_H
+#define HOMEHOOK_PRX_H
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-	void initHomeButton(int devkit_version);
-	unsigned int readHomeButton(void);
-#ifdef __cplusplus
-}
-#endif
+void initHomeButton(int devkit_version);
+unsigned int readHomeButton(void);
+
+#endif /* HOMEHOOK_PRX_H */

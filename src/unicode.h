@@ -18,9 +18,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#pragma once
+#ifndef UNICODE_H
+#define UNICODE_H
 
-// Function declaration
+// 関数宣言
 // UTF-8 -> Shift_JIS
 int utf8_to_sjis(const void *utf8_text, void *buf);
 
@@ -37,3 +38,5 @@ int sjis_to_utf16le(const void *sjis_text, void *buf);
 int sjis_to_utf16be(const void *sjis_text, void *buf);
 
 unsigned short sjis_to_ucs2(unsigned short sjis);
+
+#endif

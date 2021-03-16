@@ -18,35 +18,38 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#pragma once
+#ifndef CHEATS_H
+#define CHEATS_H
 
-#include <psptypes.h>
-
-#define CHEAT_NAME_LENGTH (40 * 4)
+#define CHEAT_NAME_LENGTH (40*4)
 #define MAX_CHEATS_PAGE 3
 #define MAX_CHEATS (MAX_CHEATS_PAGE * 10)
 
-enum cheat_variant_t
+typedef enum
 {
-    CHEAT_TYPE_GAMESHARK_V1,
-    CHEAT_TYPE_GAMESHARK_V3,
-    CHEAT_TYPE_DIRECT_V1,
-    CHEAT_TYPE_DIRECT_V3,
-    CHEAT_TYPE_INVALID
-};
+  CHEAT_TYPE_GAMESHARK_V1,
+  CHEAT_TYPE_GAMESHARK_V3,
+  CHEAT_TYPE_DIRECT_V1,
+  CHEAT_TYPE_DIRECT_V3,
+  CHEAT_TYPE_INVALID
+} cheat_variant_t;
 
-struct cheat_t
+typedef struct
 {
-    char cheat_name[CHEAT_NAME_LENGTH];
-    u32 cheat_active;
-    u32 cheat_codes[256]; /* TODO */
-    u32 num_cheat_lines;
-    cheat_variant_t cheat_variant;
-};
+  char cheat_name[CHEAT_NAME_LENGTH];
+  u32 cheat_active;
+  u32 cheat_codes[256]; /* TODO */
+  u32 num_cheat_lines;
+  cheat_variant_t cheat_variant;
+} cheat_t;
 
-//Global variable declaration
+// グローバル変数宣言
+
 extern u32 g_cheats_num;
 
-// Global functions
+// 関数宣言
+
 void process_cheats();
 void add_cheats(char *cheats_filename);
+
+#endif

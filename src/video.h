@@ -18,32 +18,33 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#pragma once
-
-#include <psptypes.h>
+#ifndef VIDEO_H
+#define VIDEO_H
 
 void update_scanline();
 
 extern s32 affine_reference_x[2];
 extern s32 affine_reference_y[2];
 
-typedef void (*tile_render_function)(u32 layer_number, u32 start, u32 end,
-                                     void *dest_ptr);
-typedef void (*bitmap_render_function)(u32 start, u32 end, void *dest_ptr);
+typedef void (* tile_render_function)(u32 layer_number, u32 start, u32 end,
+ void *dest_ptr);
+typedef void (* bitmap_render_function)(u32 start, u32 end, void *dest_ptr);
 
-struct tile_layer_render_struct
+typedef struct
 {
-    tile_render_function normal_render_base;
-    tile_render_function normal_render_transparent;
-    tile_render_function alpha_render_base;
-    tile_render_function alpha_render_transparent;
-    tile_render_function color16_render_base;
-    tile_render_function color16_render_transparent;
-    tile_render_function color32_render_base;
-    tile_render_function color32_render_transparent;
-};
+  tile_render_function normal_render_base;
+  tile_render_function normal_render_transparent;
+  tile_render_function alpha_render_base;
+  tile_render_function alpha_render_transparent;
+  tile_render_function color16_render_base;
+  tile_render_function color16_render_transparent;
+  tile_render_function color32_render_base;
+  tile_render_function color32_render_transparent;
+} tile_layer_render_struct;
 
-struct bitmap_layer_render_struct
+typedef struct
 {
-    bitmap_render_function normal_render;
-};
+  bitmap_render_function normal_render;
+} bitmap_layer_render_struct;
+
+#endif

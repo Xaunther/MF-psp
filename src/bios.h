@@ -18,14 +18,15 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#pragma once
+#ifndef BIOS_H
+#define BIOS_H
 
-#include <pspkernel.h>
-
-// Shared function declarations
+// 関数宣言
 void bios_halt();
 u32 bios_sqrt(u32 value);
 void bios_cpuset(u32 source, u32 dest, u32 cnt);
 void bios_cpufastset(u32 source, u32 dest, u32 cnt);
 void bios_bgaffineset(u32 source, u32 dest, u32 num);
 void bios_objaffineset(u32 source, u32 dest, u32 num, u32 offset);
+
+#endif
