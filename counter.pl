@@ -1,6 +1,5 @@
 #!/usr/bin/perl
 
-# ログファイル名を指定
 $log = "build_count.inc";
 $/ = " ";
 open(IN,"$log");
