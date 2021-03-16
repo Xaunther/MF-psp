@@ -146,5 +146,16 @@ endif
 all:
 	rm ./PARAM.SFO
 	rm ./gui.o
+	@mkdir -p ../build
+	@mkdir -p ../build/cfg
+	@mkdir -p ../build/font
+	@mkdir -p ../build/GBA
+	@mkdir -p ../build/GBA/CFG
+	@mkdir -p ../build/GBA/CHT
+	@mkdir -p ../build/GBA/ROM
+	@mkdir -p ../build/GBA/SAV
+	@mkdir -p ../build/GBA/SS
+	cp ../cfg/* ../build/cfg/
+	cp ../font/* ../build/font/
 	cp ./*.prx ../obj
 	cp ./*.PBP ../obj
