@@ -84,81 +84,81 @@ typedef enum
 // 各カウンターにリロードする際にprescale分シフトされる
 // TODO:32bitアクセスと8/16bitアクセスで処理を分ける必要がある
 // 8/16ビットアクセス時には呼び出す必要がない？
-#define COUNT_TIMER(timer_number)                                             \
-  timer[timer_number].reload = 0x10000 - value;                               \
-  if(timer_number < 2)                                                        \
-  {                                                                           \
-    u32 timer_reload =                                                        \
-     timer[timer_number].reload;              \
-    SOUND_UPDATE_FREQUENCY_STEP(timer_number);                                \
-  }                                                                           \
+#define COUNT_TIMER(timer_number)               \
+  timer[timer_number].reload = 0x10000 - value; \
+  if (timer_number < 2)                         \
+  {                                             \
+    u32 timer_reload =                          \
+        timer[timer_number].reload;             \
+    SOUND_UPDATE_FREQUENCY_STEP(timer_number);  \
+  }
 
 // タイマーの値の調整
 // TODO:調整必要
-#define ADJUST_SOUND_BUFFER(timer_number, channel)                            \
-  if(timer[timer_number].direct_sound_channels & (0x01 << channel))           \
-  {                                                                           \
-    direct_sound_channel[channel].buffer_index = gbc_sound_buffer_index;      \
-  }                                                                           \
+#define ADJUST_SOUND_BUFFER(timer_number, channel)                       \
+  if (timer[timer_number].direct_sound_channels & (0x01 << channel))     \
+  {                                                                      \
+    direct_sound_channel[channel].buffer_index = gbc_sound_buffer_index; \
+  }
 
 // タイマーのアクセスとカウント開始処理
-#define TRIGGER_TIMER(timer_number)                                           \
-  if(value & 0x80)                                                            \
-  {                                                                           \
-    /* スタートビットが”1”だった場合 */                                     \
-    if(timer[timer_number].status == TIMER_INACTIVE)                          \
-    {                                                                         \
-      /* タイマーが停止していた場合 */                                        \
-      /* 各種設定をして、タイマー作動 */                                      \
-                                                                              \
-      /* リロード値を読み込む */                                              \
-      u32 timer_reload = timer[timer_number].reload;                          \
-                                                                              \
-      /* カスケードモードか判別(タイマー0以外)*/                              \
-      if(((value >> 2) & 0x01) && (timer_number != 0))                        \
-      {                                                                       \
-        /* カスケードモード */                                                \
-        timer[timer_number].status = TIMER_CASCADE;                           \
-        /* プリスケールの設定 */                                              \
-        timer[timer_number].prescale = 0;                                     \
-      }                                                                       \
-      else                                                                    \
-      {                                                                       \
-        /* プリスケールモード */                                              \
-        timer[timer_number].status = TIMER_PRESCALE;                          \
-        u32 prescale = prescale_table[value & 0x03];                          \
-        /* プリスケールの設定 */                                              \
-        timer[timer_number].prescale = prescale;                              \
-      }                                                                       \
-                                                                              \
-      /* IRQの設定 */                                                         \
-      timer[timer_number].irq = (value >> 6) & 0x01;                          \
-                                                                              \
-      /* カウンタを設定 */                                                    \
-      timer[timer_number].count = timer_reload << timer[timer_number].prescale; \
-      ADDRESS16(io_registers, 0x100 + (timer_number * 4)) =                   \
-      0x10000 - timer_reload;                                                 \
-                                                                              \
-      if(timer[timer_number].count < g_execute_cycles)                        \
-        g_execute_cycles = timer[timer_number].count;                         \
-                                                                              \
-      if(timer_number < 2)                                                    \
-      {                                                                       \
-        /* 小数点以下を切り捨てていたので、GBCサウンドと同様の処理にした*/    \
-        SOUND_UPDATE_FREQUENCY_STEP(timer_number);                            \
-        ADJUST_SOUND_BUFFER(timer_number, 0);                                 \
-        ADJUST_SOUND_BUFFER(timer_number, 1);                                 \
-      }                                                                       \
-    }                                                                         \
-  }                                                                           \
-  else                                                                        \
-  {                                                                           \
-    if(timer[timer_number].status != TIMER_INACTIVE)                          \
-    {                                                                         \
-      timer[timer_number].status = TIMER_INACTIVE;                            \
-    }                                                                         \
-  }                                                                           \
-  ADDRESS16(io_registers, 0x102 + (timer_number * 4)) = value;                \
+#define TRIGGER_TIMER(timer_number)                                                                     \
+  if (value & 0x80)                                                                                     \
+  {                                                                                                     \
+    /* スタートビットが”1”だった場合 */                                                \
+    if (timer[timer_number].status == TIMER_INACTIVE)                                                   \
+    {                                                                                                   \
+      /* タイマーが停止していた場合 */                                                     \
+      /* 各種設定をして、タイマー作動 */                                                  \
+                                                                                                        \
+      /* リロード値を読み込む */                                                              \
+      u32 timer_reload = timer[timer_number].reload;                                                    \
+                                                                                                        \
+      /* カスケードモードか判別(タイマー0以外)*/                                       \
+      if (((value >> 2) & 0x01) && (timer_number != 0))                                                 \
+      {                                                                                                 \
+        /* カスケードモード */                                                                  \
+        timer[timer_number].status = TIMER_CASCADE;                                                     \
+        /* プリスケールの設定 */                                                               \
+        timer[timer_number].prescale = 0;                                                               \
+      }                                                                                                 \
+      else                                                                                              \
+      {                                                                                                 \
+        /* プリスケールモード */                                                               \
+        timer[timer_number].status = TIMER_PRESCALE;                                                    \
+        u32 prescale = prescale_table[value & 0x03];                                                    \
+        /* プリスケールの設定 */                                                               \
+        timer[timer_number].prescale = prescale;                                                        \
+      }                                                                                                 \
+                                                                                                        \
+      /* IRQの設定 */                                                                                \
+      timer[timer_number].irq = (TIMER_IRQ_TYPE)((value >> 6) & 0x01);                                  \
+                                                                                                        \
+      /* カウンタを設定 */                                                                       \
+      timer[timer_number].count = timer_reload << timer[timer_number].prescale;                         \
+      ADDRESS16(io_registers, 0x100 + (timer_number * 4)) =                                             \
+          0x10000 - timer_reload;                                                                       \
+                                                                                                        \
+      if (timer[timer_number].count < g_execute_cycles)                                                 \
+        g_execute_cycles = timer[timer_number].count;                                                   \
+                                                                                                        \
+      if (timer_number < 2)                                                                             \
+      {                                                                                                 \
+        /* 小数点以下を切り捨てていたので、GBCサウンドと同様の処理にした*/ \
+        SOUND_UPDATE_FREQUENCY_STEP(timer_number);                                                      \
+        ADJUST_SOUND_BUFFER(timer_number, 0);                                                           \
+        ADJUST_SOUND_BUFFER(timer_number, 1);                                                           \
+      }                                                                                                 \
+    }                                                                                                   \
+  }                                                                                                     \
+  else                                                                                                  \
+  {                                                                                                     \
+    if (timer[timer_number].status != TIMER_INACTIVE)                                                   \
+    {                                                                                                   \
+      timer[timer_number].status = TIMER_INACTIVE;                                                      \
+    }                                                                                                   \
+  }                                                                                                     \
+  ADDRESS16(io_registers, 0x102 + (timer_number * 4)) = value;
 
 /******************************************************************************
  * グローバル変数の宣言
@@ -199,4 +199,3 @@ u32 file_length(const char *filename);
 MODEL_TYPE get_model();
 
 #endif /* MAIN_H */
-

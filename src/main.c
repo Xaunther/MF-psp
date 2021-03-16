@@ -133,7 +133,7 @@ u32 g_use_home;
       /* タイマーがオーバーフローした場合 */                                  \
       /* IRQのトリガをON */                                                              \
       if (timer[timer_number].irq == TIMER_TRIGGER_IRQ)                                       \
-        irq_raised |= IRQ_TIMER##timer_number;                                                \
+        irq_raised = (IRQ_TYPE)(irq_raised | IRQ_TIMER##timer_number);                        \
                                                                                               \
       if ((timer_number != 3) &&                                                              \
           (timer[timer_number + 1].status == TIMER_CASCADE))                                  \
@@ -257,11 +257,11 @@ int CallbackThread(SceSize args, void *argp)
   int id;
 
   // 終了周りのコールバック
-  id = sceKernelCreateCallback("Exit Callback", (void *)exit_callback, NULL);
+  id = sceKernelCreateCallback("Exit Callback", (SceKernelCallbackFunction)exit_callback, NULL);
   sceKernelRegisterExitCallback(id);
 
   // 電源周りのコールバック
-  id = sceKernelCreateCallback("Power Callback", (void *)power_callback, NULL);
+  id = sceKernelCreateCallback("Power Callback", (SceKernelCallbackFunction)power_callback, NULL);
   scePowerRegisterCallback(-1, id); // TODO
 
   sceKernelSleepThreadCB();
@@ -588,7 +588,7 @@ u32 update_gba()
             dma_transfer(dma + 3);
 
           if (dispstat & 0x10)
-            irq_raised |= IRQ_HBLANK; // HBLANK割込みはVBLANK中は発生しない
+            irq_raised = (IRQ_TYPE)(irq_raised | IRQ_HBLANK); // HBLANK割込みはVBLANK中は発生しない
         }
 
       } // HBLANKでないとき
@@ -606,7 +606,7 @@ u32 update_gba()
 
           dispstat |= 0x01;
           if (dispstat & 0x8)
-            irq_raised |= IRQ_VBLANK;
+            irq_raised = (IRQ_TYPE)(irq_raised | IRQ_VBLANK);
 
           affine_reference_x[0] = ((s32)(ADDRESS32(io_registers, 0x28) << 4) >> 4);
           affine_reference_y[0] = ((s32)(ADDRESS32(io_registers, 0x2C) << 4) >> 4);
@@ -668,7 +668,7 @@ u32 update_gba()
           dispstat |= 0x04;
           if (dispstat & 0x20)
           {
-            irq_raised |= IRQ_VCOUNT;
+            irq_raised = (IRQ_TYPE)(irq_raised | IRQ_VCOUNT);
           }
         }
         else
@@ -896,7 +896,7 @@ void error_msg(char *text)
 void set_cpu_mode(CPU_MODE_TYPE new_mode)
 {
   u32 i;
-  CPU_MODE_TYPE cpu_mode = reg[CPU_MODE];
+  CPU_MODE_TYPE cpu_mode = (CPU_MODE_TYPE)reg[CPU_MODE];
 
   if (cpu_mode != new_mode)
   {

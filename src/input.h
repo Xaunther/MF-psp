@@ -94,4 +94,3 @@ extern u32 sensorR;
 extern u32 gamepad_config_map[MAX_GAMEPAD_CONFIG_MAP];
 
 #endif
-

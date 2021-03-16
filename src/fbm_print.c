@@ -8,28 +8,28 @@
 
 #include "common.h"
 
-#define FBM_PSP_WIDTH			(480)
-#define FBM_PSP_HEIGHT			(272)
-#define FBM_PSP_PIXEL_FORMAT	(3)
+#define FBM_PSP_WIDTH (480)
+#define FBM_PSP_HEIGHT (272)
+#define FBM_PSP_PIXEL_FORMAT (3)
 
-#define FBM_SIZE_CONTROL		(9)
-#define FBM_SIZE_MAP			(6)
+#define FBM_SIZE_CONTROL (9)
+#define FBM_SIZE_MAP (6)
 
 static fbm_control_t fbmControl[2];
-static fbm_map_t     *fbmFontMap[2];
-static fbm_font_t    *fbmFont[2];
-static u8     *font_buf[2];
+static fbm_map_t *fbmFontMap[2];
+static fbm_font_t *fbmFont[2];
+static u8 *font_buf[2];
 
-static int           fbmMaxCol;
-static int           fbmMaxRow;
-static int    nextx;
-static int    nexty;
+static int fbmMaxCol;
+static int fbmMaxRow;
+static int nextx;
+static int nexty;
 
-static char   use_subfont;	// 0=single only, other=single+double
+static char use_subfont; // 0=single only, other=single+double
 
-static char   *fbm_path[2];
-static int    fbm_whence[2];
-static int    fbm_fd[2] = {-1, -1};
+static char *fbm_path[2];
+static int fbm_whence[2];
+static int fbm_fd[2] = {-1, -1};
 
 static void *fbm_malloc(size_t size);
 static void fbm_free(void **ptr);
@@ -39,8 +39,8 @@ static int fbm_readfct(int fd, fbm_control_t *control, fbm_map_t **map, int *fbm
 static int fbm_readfbm(int fd, fbm_control_t *control, fbm_font_t **font, u8 **buf, int fbm_whence, int index, int fontcnt);
 static int fbm_issubfont(u16 c);
 static int fbm_ismainfont(u16 c);
-static fbm_font_t * fbm_getfont(u16 index, u8 isdouble);
-static const char* utf8decode(const char *utf8, u16 *ucs);
+static fbm_font_t *fbm_getfont(u16 index, u8 isdouble);
+static const char *utf8decode(const char *utf8, u16 *ucs);
 static u8 utf8_ucs2(const char *utf8, u16 *ucs);
 static u32 ucslen(const u16 *ucs);
 
@@ -51,9 +51,9 @@ static u32 ucslen(const u16 *ucs);
 ------------------------------------------------------*/
 int fbm_init(char *m_path, char *s_path)
 {
-  int  result;
+  int result;
 
-  use_subfont = (s_path) ? (s_path[0]) ? 1: 0: 0;
+  use_subfont = (s_path) ? (s_path[0]) ? 1 : 0 : 0;
   fbmMaxCol = fbmMaxRow = 0;
   nextx = nexty = 0;
 
@@ -121,7 +121,7 @@ int fbm_init(char *m_path, char *s_path)
 
   return 0;
 
-  err_label:
+err_label:
   fbm_fclose(&fbm_fd[0]);
   fbm_fclose(&fbm_fd[1]);
   fbm_freeall();
@@ -134,19 +134,19 @@ int fbm_init(char *m_path, char *s_path)
 ------------------------------------------------------*/
 void fbm_freeall()
 {
-	fbm_free((void *)&fbm_path[0]);
-	fbm_free((void *)&fbm_path[1]);
-	fbm_free((void *)&fbmFontMap[0]);
-	fbm_free((void *)&fbmFontMap[1]);
-	fbm_free((void *)&fbmFont[0]);
-	fbm_free((void *)&fbmFont[1]);
-	fbm_free((void *)&font_buf[0]);
-	fbm_free((void *)&font_buf[1]);
+  fbm_free((void **)&fbm_path[0]);
+  fbm_free((void **)&fbm_path[1]);
+  fbm_free((void **)&fbmFontMap[0]);
+  fbm_free((void **)&fbmFontMap[1]);
+  fbm_free((void **)&fbmFont[0]);
+  fbm_free((void **)&fbmFont[1]);
+  fbm_free((void **)&font_buf[0]);
+  fbm_free((void **)&font_buf[1]);
 
-	fbm_whence[0] = 0;
-	fbm_whence[1] = 0;
+  fbm_whence[0] = 0;
+  fbm_whence[1] = 0;
 
-	fbmMaxCol = fbmMaxRow = 0;
+  fbmMaxCol = fbmMaxRow = 0;
 }
 /*------------------------------------------------------
   文字列の横幅を計算
@@ -155,12 +155,12 @@ void fbm_freeall()
 ------------------------------------------------------*/
 int fbm_getwidth(char *str)
 {
-  int           i;
-  int           len;
-  int           index;
-  int           width;
-  fbm_font_t    *font;
-  u16           ucs[2048];
+  int i;
+  int len;
+  int index;
+  int width;
+  fbm_font_t *font;
+  u16 ucs[2048];
   u32 font_num;
   width = 0;
   utf8_ucs2(str, ucs);
@@ -207,10 +207,13 @@ int fbm_printVRAM(void *vram, int bufferwidth, int x, int y, char *str, u32 colo
   int issub;
   u16 ucs[2048];
 
-  if (bufferwidth == 0) return -1;
+  if (bufferwidth == 0)
+    return -1;
 
-  if (x >= 0) nextx = x % FBM_PSP_WIDTH;
-  if (y >= 0) nexty = y % FBM_PSP_HEIGHT;
+  if (x >= 0)
+    nextx = x % FBM_PSP_WIDTH;
+  if (y >= 0)
+    nexty = y % FBM_PSP_HEIGHT;
 
   // utf-8nをUCS2に変換
   utf8_ucs2(str, ucs);
@@ -256,14 +259,15 @@ int fbm_printVRAM(void *vram, int bufferwidth, int x, int y, char *str, u32 colo
 /////////////////////////////////////////////////////////////////////////////
 void fbm_printSUB(void *vram, int bufferwidth, int index, int isdouble, int height, int byteperline, u32 color, u32 back, u8 fill)
 {
-  int           i;
-  int           j;
-  int           shift;
-  u8            pt;
-  u16           *vptr;
-  fbm_font_t    *font;
+  int i;
+  int j;
+  int shift;
+  u8 pt;
+  u16 *vptr;
+  fbm_font_t *font;
 
-  if (index < 0) return;
+  if (index < 0)
+    return;
 
   font = fbm_getfont(index, isdouble);
 
@@ -301,7 +305,7 @@ void fbm_printSUB(void *vram, int bufferwidth, int index, int isdouble, int heig
       {
         // 文字描画時
         if (fill & 0x01)
-          *vptr =  (u16)color;
+          *vptr = (u16)color;
       }
       // 背景描画時
       else
@@ -326,15 +330,16 @@ void *fbm_malloc(size_t size)
 {
   int h_block;
 
-  if (size == 0) return NULL;
+  if (size == 0)
+    return NULL;
 
   h_block = (int)malloc(size);
 
-  if (h_block < 0) return NULL;
+  if (h_block < 0)
+    return NULL;
 
   return (void *)(h_block);
 }
-
 
 void fbm_free(void **ptr)
 {
@@ -342,30 +347,26 @@ void fbm_free(void **ptr)
     free(*ptr);
 }
 
-
 int fbm_fopen(char *path)
 {
   int result;
-
 
   result = sceIoOpen(path, PSP_O_RDONLY, 0777);
 
   return result;
 }
 
-
 void fbm_fclose(int *fd)
 {
-  if (*fd < 0) return;
+  if (*fd < 0)
+    return;
   sceIoClose(*fd);
   *fd = -1;
 }
 
-
 int fbm_readfct(int fd, fbm_control_t *control, fbm_map_t **map, int *fbm_whence)
 {
   int result;
-
 
   result = sceIoRead(fd, control, FBM_SIZE_CONTROL);
 
@@ -396,7 +397,6 @@ int fbm_readfct(int fd, fbm_control_t *control, fbm_map_t **map, int *fbm_whence
   return 0;
 }
 
-
 int fbm_readfbm(int fd, fbm_control_t *control, fbm_font_t **font, u8 **buf, int fbm_whence, int index, int fontcnt)
 {
   int result;
@@ -404,8 +404,7 @@ int fbm_readfbm(int fd, fbm_control_t *control, fbm_font_t **font, u8 **buf, int
   int rebuild;
   u16 i;
 
-
-  rebuild = (*font == NULL || *buf == NULL) ? 1: 0;
+  rebuild = (*font == NULL || *buf == NULL) ? 1 : 0;
 
   if (rebuild)
   {
@@ -473,7 +472,8 @@ int fbm_issubfont(u16 c)
 {
   int i;
 
-  if (!use_subfont) return -1;
+  if (!use_subfont)
+    return -1;
 
   for (i = 0; i < fbmControl[1].mapcnt && c >= fbmFontMap[1][i].start; i++)
   {
@@ -484,8 +484,7 @@ int fbm_issubfont(u16 c)
   return -1;
 }
 
-
-fbm_font_t * fbm_getfont(u16 index, u8 isdouble)
+fbm_font_t *fbm_getfont(u16 index, u8 isdouble)
 {
   return &fbmFont[isdouble][index];
 }
@@ -494,54 +493,69 @@ fbm_font_t * fbm_getfont(u16 index, u8 isdouble)
   UTF-8をucs2に変換
   return 次の文字へのポインタ
 ------------------------------------------------------*/
-static const char* utf8decode(const char *utf8, u16 *ucs)
+static const char *utf8decode(const char *utf8, u16 *ucs)
 {
-    unsigned char c = *utf8++;
-    unsigned long code;
-    int tail = 0;
+  unsigned char c = *utf8++;
+  unsigned long code;
+  int tail = 0;
 
-    if ((c <= 0x7f) || (c >= 0xc2)) {
-        /* Start of new character. */
-        if (c < 0x80) {        /* U-00000000 - U-0000007F, 1 byte */
-            code = c;
-        } else if (c < 0xe0) { /* U-00000080 - U-000007FF, 2 bytes */
-            tail = 1;
-            code = c & 0x1f;
-        } else if (c < 0xf0) { /* U-00000800 - U-0000FFFF, 3 bytes */
-            tail = 2;
-            code = c & 0x0f;
-        } else if (c < 0xf5) { /* U-00010000 - U-001FFFFF, 4 bytes */
-            tail = 3;
-            code = c & 0x07;
-        } else {
-            /* Invalid size. */
-            code = 0xfffd;
-        }
-
-        while (tail-- && ((c = *utf8++) != 0)) {
-            if ((c & 0xc0) == 0x80) {
-                /* Valid continuation character. */
-                code = (code << 6) | (c & 0x3f);
-
-            } else {
-                /* Invalid continuation char */
-                code = 0xfffd;
-                utf8--;
-                break;
-            }
-        }
-    } else {
-        /* Invalid UTF-8 char */
-        code = 0xfffd;
+  if ((c <= 0x7f) || (c >= 0xc2))
+  {
+    /* Start of new character. */
+    if (c < 0x80)
+    { /* U-00000000 - U-0000007F, 1 byte */
+      code = c;
     }
-    /* currently we don't support chars above U-FFFF */
-    *ucs = (code < 0x10000) ? code : 0xfffd;
-    return utf8;
+    else if (c < 0xe0)
+    { /* U-00000080 - U-000007FF, 2 bytes */
+      tail = 1;
+      code = c & 0x1f;
+    }
+    else if (c < 0xf0)
+    { /* U-00000800 - U-0000FFFF, 3 bytes */
+      tail = 2;
+      code = c & 0x0f;
+    }
+    else if (c < 0xf5)
+    { /* U-00010000 - U-001FFFFF, 4 bytes */
+      tail = 3;
+      code = c & 0x07;
+    }
+    else
+    {
+      /* Invalid size. */
+      code = 0xfffd;
+    }
+
+    while (tail-- && ((c = *utf8++) != 0))
+    {
+      if ((c & 0xc0) == 0x80)
+      {
+        /* Valid continuation character. */
+        code = (code << 6) | (c & 0x3f);
+      }
+      else
+      {
+        /* Invalid continuation char */
+        code = 0xfffd;
+        utf8--;
+        break;
+      }
+    }
+  }
+  else
+  {
+    /* Invalid UTF-8 char */
+    code = 0xfffd;
+  }
+  /* currently we don't support chars above U-FFFF */
+  *ucs = (code < 0x10000) ? code : 0xfffd;
+  return utf8;
 }
 
 static u8 utf8_ucs2(const char *utf8, u16 *ucs)
 {
-  while(*utf8 !='\0')
+  while (*utf8 != '\0')
   {
     utf8 = utf8decode(utf8, ucs++);
   }
@@ -552,7 +566,7 @@ static u8 utf8_ucs2(const char *utf8, u16 *ucs)
 static u32 ucslen(const u16 *ucs)
 {
   u32 len = 0;
-  while(ucs[len] != '\0')
+  while (ucs[len] != '\0')
     len++;
   return len;
 }

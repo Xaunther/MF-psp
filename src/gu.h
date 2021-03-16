@@ -21,7 +21,7 @@
 #ifndef GU_H
 #define GU_H
 
-#define FONT_WIDTH  6
+#define FONT_WIDTH 6
 #define FONT_HEIGHT 10
 
 #define GBA_SCREEN_WIDTH 240
@@ -117,7 +117,6 @@ typedef struct
   u32 y;
 } TEXTURE_BIT;
 
-
 typedef struct
 {
   u32 pitch;
@@ -133,14 +132,14 @@ typedef struct
 
 typedef struct
 {
-  VIDEO_OUT_PARAMETER video_out;  /* pspDveMgrSetVideoOut のパラメータ */
-  int filter[2];                  /* MENU表示時のフィルタ */
-  TEXTURE_SIZE texture_size;      /* テクスチャサイズ */
-  TEXTURE_BIT texture_bit;        /* テクスチャの縦横のビット数 */
-  SCREEN_SIZE screen_size;        /* 表示バッファのサイズ */
-  VIEW_PORT view;                 /* 表示範囲 */
-  SPRITE screen_setting_1;        /* スプライトデータ 1 */
-  SPRITE screen_setting_2;        /* スプライトデータ 1 */
+  VIDEO_OUT_PARAMETER video_out; /* pspDveMgrSetVideoOut のパラメータ */
+  int filter[2];                 /* MENU表示時のフィルタ */
+  TEXTURE_SIZE texture_size;     /* テクスチャサイズ */
+  TEXTURE_BIT texture_bit;       /* テクスチャの縦横のビット数 */
+  SCREEN_SIZE screen_size;       /* 表示バッファのサイズ */
+  VIEW_PORT view;                /* 表示範囲 */
+  SPRITE screen_setting_1;       /* スプライトデータ 1 */
+  SPRITE screen_setting_2;       /* スプライトデータ 1 */
 } SCREEN_PARAMETER;
 
 extern float *temp_vertex;

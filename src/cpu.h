@@ -70,19 +70,19 @@ typedef enum
 
 typedef enum
 {
-  REG_SP            = 13,
-  REG_LR            = 14,
-  REG_PC            = 15,
-  REG_N_FLAG        = 16,
-  REG_Z_FLAG        = 17,
-  REG_C_FLAG        = 18,
-  REG_V_FLAG        = 19,
-  REG_CPSR          = 20,
-  REG_SAVE          = 21,
-  REG_SAVE2         = 22,
-  REG_SAVE3         = 23,
-  CPU_MODE          = 29,
-  CPU_HALT_STATE    = 30,
+  REG_SP = 13,
+  REG_LR = 14,
+  REG_PC = 15,
+  REG_N_FLAG = 16,
+  REG_Z_FLAG = 17,
+  REG_C_FLAG = 18,
+  REG_V_FLAG = 19,
+  REG_CPSR = 20,
+  REG_SAVE = 21,
+  REG_SAVE2 = 22,
+  REG_SAVE3 = 23,
+  CPU_MODE = 29,
+  CPU_HALT_STATE = 30,
   CHANGED_PC_STATUS = 31
 } EXT_REG_NUMBERS;
 
@@ -110,19 +110,19 @@ void cpu_write_mem_savestate(u32 ver);
 void cpu_get_size_savestate(u32 ver);
 
 void invalidate_all_cache();
-void invalidate_icache_region(u8* addr, u32 length);
+void invalidate_icache_region(u8 *addr, u32 length);
 
 u8 *block_lookup_address_arm(u32 pc);
 u8 *block_lookup_address_thumb(u32 pc);
 u8 *block_lookup_address_dual(u32 pc);
 s32 translate_block_arm(u32 pc, TRANSLATION_REGION_TYPE translation_region,
- u32 smc_enable);
+                        u32 smc_enable);
 s32 translate_block_thumb(u32 pc, TRANSLATION_REGION_TYPE translation_region,
- u32 smc_enable);
+                          u32 smc_enable);
 
-#define ROM_TRANSLATION_CACHE_SIZE  (1024 * 512 * 3)  /* 2048 KB 0x20 0000 */
-#define RAM_TRANSLATION_CACHE_SIZE  (1024 * 128 * 1)  /*  128 KB 0x06 0000 現在の所 0x020000を超えた状況はない*/
-#define BIOS_TRANSLATION_CACHE_SIZE (1024 * 128 * 1)  /*   32 KB 0x00 8000 現在の所 0x008000を超えた状況はない*/
+#define ROM_TRANSLATION_CACHE_SIZE (1024 * 512 * 3)  /* 2048 KB 0x20 0000 */
+#define RAM_TRANSLATION_CACHE_SIZE (1024 * 128 * 1)  /*  128 KB 0x06 0000 現在の所 0x020000を超えた状況はない*/
+#define BIOS_TRANSLATION_CACHE_SIZE (1024 * 128 * 1) /*   32 KB 0x00 8000 現在の所 0x008000を超えた状況はない*/
 #define TRANSLATION_CACHE_LIMIT_THRESHOLD (1024)
 
 extern u8 rom_translation_cache[ROM_TRANSLATION_CACHE_SIZE];

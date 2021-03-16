@@ -6,19 +6,17 @@
 #ifndef __FBM_PRINT__
 #define __FBM_PRINT__
 
-
-#define FBM_FONT_FILL	(0x01)		// Fill Font(normal)
-#define FBM_BACK_FILL	(0x10)		// Fill BackGrand
-
+#define FBM_FONT_FILL (0x01) // Fill Font(normal)
+#define FBM_BACK_FILL (0x10) // Fill BackGrand
 
 typedef struct
 {
 	u16 fontcnt;
 	u16 mapcnt;
 	u16 defaultchar;
-	u8  width;
-	u8  height;
-	u8  byteperchar;
+	u8 width;
+	u8 height;
+	u8 byteperchar;
 } fbm_control_t;
 
 typedef struct
@@ -30,10 +28,9 @@ typedef struct
 
 typedef struct
 {
-	u8  *width;
-	u8  *font;
+	u8 *width;
+	u8 *font;
 } fbm_font_t;
-
 
 /////////////////////////////////////////////////////////////////////////////
 // Fbm Font Initialize

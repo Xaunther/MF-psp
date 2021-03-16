@@ -64,10 +64,10 @@ typedef struct
 } game_config_t;
 
 #define ASM_CORE 0
-#define C_CORE   1
+#define C_CORE 1
 
 #define GAME_CART 0
-#define GBA_BIOS  1
+#define GBA_BIOS 1
 
 /******************************************************************************
  * グローバル変数の宣言
@@ -102,4 +102,3 @@ void init_gpsp_config();
 void init_game_config();
 
 #endif
-

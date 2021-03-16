@@ -258,7 +258,7 @@ void show_progress(char *text)
   draw_dialog(progress_sx - 8, progress_sy -29, progress_ex + 8, progress_ey + 13);
 
   boxfill(progress_sx - 1, progress_sy - 1, progress_ex + 1, progress_ey + 1, COLOR_BLACK);
-    
+
   if (progress_current)
   {
     int width = (int)( (float)(++progress_current / progress_total) * (float)(screen_width / 3.0 * 2.0) );
