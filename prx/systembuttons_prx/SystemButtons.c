@@ -1,8 +1,8 @@
 #include <pspmoduleexport.h>
 #define NULL ((char *)0)
 
-extern void module_start();
-extern void module_info();
+extern int module_start;
+extern int module_info;
 static const unsigned int __syslib_exports[4] __attribute__((section(".rodata.sceResident"))) = {
 	0xD632ACDB,
 	0xF01D73A7,
@@ -10,17 +10,17 @@ static const unsigned int __syslib_exports[4] __attribute__((section(".rodata.sc
 	(unsigned int)&module_info,
 };
 
-extern void initSystemButtons();
-extern void readSystemButtons();
-extern void readHomeButton();
-extern void readVolumeButtons();
-extern void readVolUpButton();
-extern void readVolDownButton();
-extern void readNoteButton();
-extern void readScreenButton();
-extern void readHoldSwitch();
-extern void readWLANSwitch();
-extern void readMainVolume();
+extern int initSystemButtons;
+extern int readSystemButtons;
+extern int readHomeButton;
+extern int readVolumeButtons;
+extern int readVolUpButton;
+extern int readVolDownButton;
+extern int readNoteButton;
+extern int readScreenButton;
+extern int readHoldSwitch;
+extern int readWLANSwitch;
+extern int readMainVolume;
 static const unsigned int __SystemButtons_exports[22] __attribute__((section(".rodata.sceResident"))) = {
 	0x494C24C0,
 	0xC3E44941,
@@ -47,6 +47,6 @@ static const unsigned int __SystemButtons_exports[22] __attribute__((section(".r
 };
 
 const struct _PspLibraryEntry __library_exports[2] __attribute__((section(".lib.ent"), used)) = {
-	{NULL, 0x0000, 0x8000, 4, 1, 1, (void *)&__syslib_exports},
-	{"SystemButtons", 0x0000, 0x4001, 4, 0, 11, (void *)&__SystemButtons_exports},
+	{NULL, 0x0000, 0x8000, 4, 1, 1, (unsigned int *)&__syslib_exports},
+	{"SystemButtons", 0x0000, 0x4001, 4, 0, 11, (unsigned int *)&__SystemButtons_exports},
 };
