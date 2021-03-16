@@ -193,10 +193,6 @@ extern u8 *bios_rom;
 
 extern u32 bios_read_protect;
 
-extern u8 *memory_map_read[8 * 1024];
-extern u32 reg[64];
-extern u8 *memory_map_write[8 * 1024];
-
 extern FILE_TAG_TYPE gamepak_file_large;
 
 extern u32 gbc_sound_wave_update;
@@ -214,11 +210,6 @@ extern u32 g_multi_mode;
 extern u32 g_adhoc_transfer_flag;
 
 // Definition of global functions
-
-extern u8 read_memory8(u32 address);
-extern u32 read_memory16(u32 address);
-extern u16 read_memory16_signed(u32 address);
-extern u32 read_memory32(u32 address);
 extern CPU_ALERT_TYPE write_memory8(u32 address, u8 value);
 extern CPU_ALERT_TYPE write_memory16(u32 address, u16 value);
 extern CPU_ALERT_TYPE write_memory32(u32 address, u32 value);
@@ -227,7 +218,6 @@ extern CPU_ALERT_TYPE dma_transfer(DMA_TRANSFER_TYPE *dma);
 extern u8 *memory_region(u32 address, u32 *memory_limit);
 extern s32 load_bios(char *name);
 extern s32 load_gamepak(char *name);
-extern u8 *load_gamepak_page(u32 physical_index);
 extern u32 load_backup(char *name);
 extern void init_memory();
 extern void init_gamepak_buffer();
@@ -237,3 +227,22 @@ extern void bios_region_read_allow();
 extern void bios_region_read_protect();
 extern u32 load_state(char *savestate_filename, u32 slot_num);
 extern u32 save_state(char *savestate_filename, u16 *screen_capture, u32 slot_num);
+
+// Assembly functions
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+    u8 read_memory8(u32 address);
+    u32 read_memory16(u32 address);
+    u16 read_memory16_signed(u32 address);
+    extern u32 read_memory32(u32 address);
+
+    u8 *load_gamepak_page(u32 physical_index);
+
+    extern u8 *memory_map_read[8 * 1024];
+    extern u32 reg[64];
+    extern u8 *memory_map_write[8 * 1024];
+#ifdef __cplusplus
+}
+#endif

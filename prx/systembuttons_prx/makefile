@@ -1,6 +1,6 @@
 TARGET = SystemButtons
 OBJS = main.o sceCtrl_driver_371.o
-PSP_FW_VERSION = 660
+PSP_FW_VERSION = 300
 
 INCDIR =
 CFLAGS = -O2 -G0 -Wall

@@ -214,10 +214,19 @@ extern u32 g_use_home;
 extern u32 psp_fps_debug;
 
 /******************************************************************************
- * "Global" functions
+ * Global functions
  ******************************************************************************/
+//Func
 void set_cpu_clock(u32 clock);
-u32 update_gba();
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+    u32 update_gba();
+    void set_cpu_mode(CPU_MODE_TYPE new_mode);
+#ifdef __cplusplus
+}
+#endif
 void reset_gba();
 void synchronize();
 void quit(u32 mode);
@@ -227,7 +236,6 @@ void main_write_mem_savestate(u32 ver);
 void main_get_size_savestate(u32 ver);
 
 void error_msg(char *text);
-void set_cpu_mode(CPU_MODE_TYPE new_mode);
 void raise_interrupt(IRQ_TYPE irq_raised);
 void change_ext(char *src, char *buffer, char *extension);
 u32 file_length(const char *filename);

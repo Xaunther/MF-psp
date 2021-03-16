@@ -84,15 +84,6 @@ enum TRANSLATION_REGION_TYPE
 };
 
 //Function definitions
-u32 execute_load_u8(u32 address);
-u32 execute_load_u16(u32 address);
-u32 execute_load_u32(u32 address);
-u32 execute_load_s8(u32 address);
-u32 execute_load_s16(u32 address);
-void execute_store_u8(u32 address, u32 source);
-void execute_store_u16(u32 address, u32 source);
-void execute_store_u32(u32 address, u32 source);
-void execute_arm_translate(u32 cycles);
 void execute_arm(u32 cycles);
 
 void init_translater();
@@ -100,16 +91,32 @@ void cpu_read_mem_savestate(u32 ver);
 void cpu_write_mem_savestate(u32 ver);
 void cpu_get_size_savestate(u32 ver);
 
-void invalidate_all_cache();
-void invalidate_icache_region(u8 *addr, u32 length);
+//Assembly functions
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+    void execute_arm_translate(u32 cycles);
+    u32 execute_load_u8(u32 address);
+    u32 execute_load_u16(u32 address);
+    u32 execute_load_u32(u32 address);
+    u32 execute_load_s8(u32 address);
+    u32 execute_load_s16(u32 address);
+    void execute_store_u8(u32 address, u32 source);
+    void execute_store_u16(u32 address, u32 source);
+    void execute_store_u32(u32 address, u32 source);
 
-u8 *block_lookup_address_arm(u32 pc);
-u8 *block_lookup_address_thumb(u32 pc);
-u8 *block_lookup_address_dual(u32 pc);
-s32 translate_block_arm(u32 pc, TRANSLATION_REGION_TYPE translation_region,
-                        u32 smc_enable);
-s32 translate_block_thumb(u32 pc, TRANSLATION_REGION_TYPE translation_region,
-                          u32 smc_enable);
+    void invalidate_icache_region(u8 *addr, u32 length);
+    void invalidate_all_cache();
+
+    u8 *block_lookup_address_arm(u32 pc);
+    u8 *block_lookup_address_thumb(u32 pc);
+    u8 *block_lookup_address_dual(u32 pc);
+
+    void flush_translation_cache_ram();
+#ifdef __cplusplus
+}
+#endif
 
 //Common operations (macros) for ROM, RAM and BIOS
 #define ROM_TRANSLATION_CACHE_SIZE (1024 * 512 * 3)  /* 2048 KB 0x20 0000 */
@@ -148,7 +155,6 @@ extern u32 bios_mode;
 extern u32 *rom_branch_hash[ROM_BRANCH_HASH_SIZE];
 
 void flush_translation_cache_rom();
-void flush_translation_cache_ram();
 void flush_translation_cache_bios();
 void dump_translation_cache();
 

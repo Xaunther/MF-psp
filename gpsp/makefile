@@ -17,8 +17,8 @@ TARGET = MF-psp
 #.o Objects to create
 OBJS = ../src/bios.o ../src/cheats.o ../src/cpu_asm.o ../src/draw.o ../src/fbm_print.o\
  ../src/gu.o ../src/gui.o ../src/homehook.o ../src/input.o ../src/main.o ../src/memory.o ../src/message.o\
- ../src/sound.o ../src/unicode.o ../src/video.o ../src/zip.o\
- ../src/pspDveManager.o ../src/video_settings.o ../src/mips_stub.o
+ ../src/sound.o ../src/unicode.o ../src/video.o ../src/zip.o ../src/cpu_common.o\
+ ../src/pspDveManager.o ../src/video_settings.o ../src/mips_stub.o ../src/mips_emit.o
 #OBJS = ../src/control.o
 
 #Add adhoc source if requested
@@ -27,7 +27,7 @@ OBJS        += adhoc.o
 endif
 
 #PSP version
-PSP_FW_VERSION = 660
+PSP_FW_VERSION = 300
 
 #If a test build, add the "test" tag to eboot title
 ifeq ($(TEST_MODE), 1)
@@ -67,7 +67,7 @@ CFLAGS  += -DUSE_EXT_MEM
 endif
 
 #Define c++ flags and assembly flags
-LIBS += -lpspgu -lpsprtc -lpspaudio -lpsppower
+LIBS += -lpspgu -lpsprtc -lpspaudio -lpsppower -lz -lm
 CXXFLAGS = $(CFLAGS) $(LIBS) -std=c++2a -fno-rtti
 ASFLAGS = $(CFLAGS)
 #Add EBOOT.PBP and the corresponding PRX module

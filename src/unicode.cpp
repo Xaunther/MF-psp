@@ -24,7 +24,14 @@
 
 #define ERR (0)
 
-void swab(const void *src, void *dest, ssize_t nbytes);
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+    void swab(const void *src, void *dest, ssize_t nbytes);
+#ifdef __cplusplus
+}
+#endif
 
 static const unsigned short _00[0x100] =
     {

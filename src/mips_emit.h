@@ -25,34 +25,46 @@
 #include "memory.h"
 #include "cpu.h"
 
-u32 mips_update_gba(u32 pc);
+//Assembly functions
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+  u32 mips_update_gba(u32 pc);
+  // Although these are defined as a function, don't call them as
+  // such (jump to it instead)
+  void mips_indirect_branch_arm(u32 address);
+  void mips_indirect_branch_thumb(u32 address);
+  void mips_indirect_branch_dual(u32 address);
 
-// Although these are defined as a function, don't call them as
-// such (jump to it instead)
-void mips_indirect_branch_arm(u32 address);
-void mips_indirect_branch_thumb(u32 address);
-void mips_indirect_branch_dual(u32 address);
+  void reg_check();
 
-u32 execute_read_cpsr();
-u32 execute_read_spsr();
-void execute_swi(u32 pc);
+  u32 execute_read_cpsr();
+  u32 execute_read_spsr();
 
-u32 execute_spsr_restore(u32 address);
-void execute_store_cpsr(u32 new_cpsr, u32 store_mask);
-void execute_store_spsr(u32 new_spsr, u32 store_mask);
+  void execute_swi(u32 pc);
 
-u32 execute_spsr_restore_body(u32 address);
-u32 execute_store_cpsr_body(u32 _cpsr, u32 store_mask, u32 address);
+  u32 execute_spsr_restore(u32 address);
+  void execute_store_cpsr(u32 new_cpsr, u32 store_mask);
+  void execute_store_spsr(u32 new_spsr, u32 store_mask);
 
-u32 execute_lsl_flags_reg(u32 value, u32 shift);
-u32 execute_lsr_flags_reg(u32 value, u32 shift);
-u32 execute_asr_flags_reg(u32 value, u32 shift);
-u32 execute_ror_flags_reg(u32 value, u32 shift);
+  u32 execute_aligned_load32(u32 address);
+  void execute_aligned_store32(u32 address, u32 value);
 
-void execute_aligned_store32(u32 address, u32 value);
-u32 execute_aligned_load32(u32 address);
+  u32 execute_lsl_flags_reg(u32 value, u32 shift);
+  u32 execute_lsr_flags_reg(u32 value, u32 shift);
+  u32 execute_asr_flags_reg(u32 value, u32 shift);
+  u32 execute_ror_flags_reg(u32 value, u32 shift);
 
-void reg_check();
+  u32 execute_spsr_restore_body(u32 address);
+  u32 execute_store_cpsr_body(u32 _cpsr, u32 store_mask, u32 address);
+
+#ifdef __cplusplus
+}
+#endif
+// Global variables
+extern u8 swi_hle_handle[256][2];
+extern u32 arm_to_mips_reg[19];
 
 typedef enum
 {
@@ -413,28 +425,6 @@ typedef enum
 #define reg_r14 mips_reg_fp
 
 // Writing to r15 goes straight to a0, to be chained with other ops
-
-u32 arm_to_mips_reg[] =
-    {
-        reg_r0,
-        reg_r1,
-        reg_r2,
-        reg_r3,
-        reg_r4,
-        reg_r5,
-        reg_r6,
-        reg_r7,
-        reg_r8,
-        reg_r9,
-        reg_r10,
-        reg_r11,
-        reg_r12,
-        reg_r13,
-        reg_r14,
-        reg_a0,
-        reg_a1,
-        reg_a2,
-        reg_temp};
 
 #define arm_reg_a0 15
 #define arm_reg_a1 16
@@ -852,8 +842,8 @@ u32 arm_to_mips_reg[] =
 // Returns a new rm if it redirects it (which will happen on most of these
 // cases)
 
-#define generate_load_rm_sh_builder(flags_op)        \
-  u32 generate_load_rm_sh_##flags_op(u32 rm)         \
+#define generate_load_rm_sh_builder(flags_op, pc)    \
+  u32 generate_load_rm_sh_##flags_op(u32 rm, u32 pc) \
   {                                                  \
     switch ((opcode >> 4) & 0x07)                    \
     {                                                \
@@ -957,22 +947,15 @@ u32 arm_to_mips_reg[] =
   }
 
 #define generate_block_extra_vars() \
-  u32 stored_pc = pc;               \
+  u32 stored_pc;                    \
   u8 *update_trampoline
 
 #define generate_block_extra_vars_arm()               \
   generate_block_extra_vars();                        \
+  generate_load_rm_sh_builder(flags, pc);             \
+  generate_load_rm_sh_builder(no_flags, pc);          \
                                                       \
-  u32 generate_load_rm_sh_flags(u32 rm);              \
-  u32 generate_load_rm_sh_no_flags(u32 rm);           \
-  u32 generate_load_offset_sh(u32 rm);                \
-  void generate_indirect_branch_arm();                \
-  void generate_indirect_branch_dual();               \
-                                                      \
-  generate_load_rm_sh_builder(flags);                 \
-  generate_load_rm_sh_builder(no_flags);              \
-                                                      \
-  u32 generate_load_offset_sh(u32 rm)                 \
+  u32 generate_load_offset_sh(u32 rm, u32 pc)         \
   {                                                   \
     switch ((opcode >> 5) & 0x03)                     \
     {                                                 \
@@ -1034,29 +1017,6 @@ u32 arm_to_mips_reg[] =
 
 #define generate_block_extra_vars_thumb() \
   generate_block_extra_vars()
-
-// It should be okay to still generate result flags, spsr will overwrite them.
-// This is pretty infrequent (returning from interrupt handlers, et al) so
-// probably not worth optimizing for.
-
-u32 execute_spsr_restore_body(u32 address)
-{
-  set_cpu_mode((CPU_MODE_TYPE)cpu_modes[reg[REG_CPSR] & 0x1F]);
-  if ((io_registers[REG_IE] & io_registers[REG_IF]) &&
-      (io_registers[REG_IME] & 0x01) && ((reg[REG_CPSR] & 0x80) == 0))
-  {
-    reg_mode[MODE_IRQ][6] = address + 4;
-    spsr[MODE_IRQ] = reg[REG_CPSR];
-    reg[REG_CPSR] = /*(reg[REG_CPSR] & ~0xFF) |*/ 0xD2;
-    address = 0x00000018;
-    set_cpu_mode(MODE_IRQ);
-  }
-
-  if (reg[REG_CPSR] & 0x20)
-    address |= 0x01;
-
-  return address;
-}
 
 typedef enum
 {
@@ -1515,11 +1475,11 @@ typedef enum
   arm_decode_data_proc_reg();                                        \
   if (check_generate_c_flag)                                         \
   {                                                                  \
-    rm = generate_load_rm_sh_flags(rm);                              \
+    rm = generate_load_rm_sh_flags(rm, pc);                          \
   }                                                                  \
   else                                                               \
   {                                                                  \
-    rm = generate_load_rm_sh_no_flags(rm);                           \
+    rm = generate_load_rm_sh_no_flags(rm, pc);                       \
   }                                                                  \
                                                                      \
   arm_op_check_##load_op();                                          \
@@ -1528,7 +1488,7 @@ typedef enum
 
 #define arm_generate_op_reg(name, load_op)                           \
   arm_decode_data_proc_reg();                                        \
-  rm = generate_load_rm_sh_no_flags(rm);                             \
+  rm = generate_load_rm_sh_no_flags(rm, pc);                         \
   arm_op_check_##load_op();                                          \
   generate_op_##name##_reg(arm_to_mips_reg[rd], arm_to_mips_reg[rn], \
                            arm_to_mips_reg[rm])
@@ -1607,26 +1567,6 @@ typedef enum
 #define arm_psr_read(op_type, psr_reg)            \
   generate_function_call(execute_read_##psr_reg); \
   generate_store_reg(reg_rv, rd)
-
-u32 execute_store_cpsr_body(u32 _cpsr, u32 store_mask, u32 address)
-{
-  reg[REG_CPSR] = _cpsr;
-  if (store_mask & 0xFF)
-  {
-    set_cpu_mode((CPU_MODE_TYPE)cpu_modes[_cpsr & 0x1F]);
-    if ((io_registers[REG_IE] & io_registers[REG_IF]) &&
-        (io_registers[REG_IME] & 0x01) && ((_cpsr & 0x80) == 0))
-    {
-      reg_mode[MODE_IRQ][6] = address + 4;
-      spsr[MODE_IRQ] = _cpsr;
-      reg[REG_CPSR] = /*(reg[REG_CPSR] & ~0xFF) |*/ 0xD2;
-      set_cpu_mode(MODE_IRQ);
-      return 0x00000018;
-    }
-  }
-
-  return 0;
-}
 
 #define arm_psr_load_new_reg() \
   generate_load_reg(reg_a0, rm)
@@ -1711,7 +1651,7 @@ u32 execute_store_cpsr_body(u32 _cpsr, u32 store_mask, u32 address)
 
 #define arm_data_trans_reg(adjust_op, adjust_dir) \
   arm_decode_data_trans_reg();                    \
-  rm = generate_load_offset_sh(rm);               \
+  rm = generate_load_offset_sh(rm, pc);           \
   arm_access_memory_reg_##adjust_op(adjust_dir)
 
 #define arm_data_trans_imm(adjust_op, adjust_dir) \
@@ -2449,53 +2389,6 @@ u32 execute_store_cpsr_body(u32 _cpsr, u32 store_mask, u32 address)
       block_exits[block_exit_position].branch_source,  \
       block_exits[block_exit_position].branch_target); \
   block_exit_position++
-
-u8 swi_hle_handle[256][2] =
-    {
-        /* use bios , emu bios */
-        {0x0, 0x0}, // SWI 0:  SoftReset
-        {0x0, 0x0}, // SWI 1:  RegisterRAMReset
-        {0x0, 0x0}, // SWI 2:  Halt
-        {0x0, 0x0}, // SWI 3:  Stop/Sleep
-        {0x0, 0x0}, // SWI 4:  IntrWait
-        {0x0, 0x0}, // SWI 5:  VBlankIntrWait
-        {0x1, 0x1}, // SWI 6:  Div
-        {0x1, 0x1}, // SWI 7:  DivArm
-        {0x0, 0x1}, // SWI 8:  Sqrt
-        {0x0, 0x0}, // SWI 9:  ArcTan
-        {0x0, 0x0}, // SWI A:  ArcTan2
-        {0x0, 0x1}, // SWI B:  CpuSet
-        {0x0, 0x1}, // SWI C:  CpuFastSet
-        {0x0, 0x0}, // SWI D:  GetBIOSCheckSum
-        {0x0, 0x1}, // SWI E:  BgAffineSet
-        {0x0, 0x1}, // SWI F:  ObjAffineSet
-        {0x0, 0x0}, // SWI 10: BitUnpack
-        {0x0, 0x0}, // SWI 11: LZ77UnCompWram
-        {0x0, 0x0}, // SWI 12: LZ77UnCompVram
-        {0x0, 0x0}, // SWI 13: HuffUnComp
-        {0x0, 0x0}, // SWI 14: RLUnCompWram
-        {0x0, 0x0}, // SWI 15: RLUnCompVram
-        {0x0, 0x0}, // SWI 16: Diff8bitUnFilterWram
-        {0x0, 0x0}, // SWI 17: Diff8bitUnFilterVram
-        {0x0, 0x0}, // SWI 18: Diff16bitUnFilter
-        {0x0, 0x0}, // SWI 19: SoundBias
-        {0x0, 0x0}, // SWI 1A: SoundDriverInit
-        {0x0, 0x0}, // SWI 1B: SoundDriverMode
-        {0x0, 0x0}, // SWI 1C: SoundDriverMain
-        {0x0, 0x0}, // SWI 1D: SoundDriverVSync
-        {0x0, 0x0}, // SWI 1E: SoundChannelClear
-        {0x0, 0x0}, // SWI 20: SoundWhatever0
-        {0x0, 0x0}, // SWI 21: SoundWhatever1
-        {0x0, 0x0}, // SWI 22: SoundWhatever2
-        {0x0, 0x0}, // SWI 23: SoundWhatever3
-        {0x0, 0x0}, // SWI 24: SoundWhatever4
-        {0x0, 0x0}, // SWI 25: MultiBoot
-        {0x0, 0x0}, // SWI 26: HardReset
-        {0x0, 0x0}, // SWI 27: CustomHalt
-        {0x0, 0x0}, // SWI 28: SoundDriverVSyncOff
-        {0x0, 0x0}, // SWI 29: SoundDriverVSyncOn
-        {0x0, 0x0}  // SWI 2A: SoundGetJumpList
-};
 
 #define generate_swi_hle_handler(_swi_number)          \
   {                                                    \

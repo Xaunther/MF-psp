@@ -71,20 +71,11 @@ typedef enum
 } FLASH_MANUFACTURER_ID_TYPE;
 
 // Function declaration
-
 void memory_read_mem_savestate(u32 ver);
 void memory_write_mem_savestate(u32 ver);
 void memopy_get_size_savestate(u32 ver);
 
-u8 read_backup(u32 address);
-void write_eeprom(u32 address, u32 value);
-u32 read_eeprom();
-CPU_ALERT_TYPE write_io_register8(u32 address, u32 value);
-CPU_ALERT_TYPE write_io_register16(u32 address, u32 value);
-CPU_ALERT_TYPE write_io_register32(u32 address, u32 value);
-void write_backup(u32 address, u32 value);
 u32 encode_bcd(u8 value);
-void write_cart_io(u32 address, u32 value);
 u32 save_backup(char *name);
 s32 parse_config_line(char *current_line, char *current_variable, char *current_value);
 s32 load_game_config(char *gamepak_title, char *gamepak_code, char *gamepak_maker);
@@ -98,6 +89,25 @@ u32 get_sio_mode(u16 io1, u16 io2);
 u32 send_adhoc_multi();
 
 u32 g_multi_mode;
+
+// Assembly functions
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+    u8 read_backup(u32 address);
+    void write_eeprom(u32 address, u32 value);
+    u32 read_eeprom();
+
+    CPU_ALERT_TYPE write_io_register8(u32 address, u32 value);
+    CPU_ALERT_TYPE write_io_register16(u32 address, u32 value);
+    CPU_ALERT_TYPE write_io_register32(u32 address, u32 value);
+
+    void write_backup(u32 address, u32 value);
+    void write_cart_io(u32 address, u32 value);
+#ifdef __cplusplus
+}
+#endif
 
 #define SIO_NORMAL8 0
 #define SIO_NORMAL32 1
