@@ -34,7 +34,6 @@
 #include "main.h"
 #include "gui.h"
 #include "gu.h"
-#include "SystemButtons.h"
 #include "sound.h"
 #include "homehook.h"
 

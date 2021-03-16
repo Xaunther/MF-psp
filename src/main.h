@@ -232,15 +232,3 @@ void raise_interrupt(IRQ_TYPE irq_raised);
 void change_ext(char *src, char *buffer, char *extension);
 u32 file_length(const char *filename);
 MODEL_TYPE get_model();
-//Local functions declaration
-void vblank_interrupt_handler(u32 sub, u32 *parg);
-void init_main();
-int main(int argc, char *argv[]);
-void print_memory_stats(u32 *counter, u32 *region_stats, u8 *stats_str);
-u32 into_suspend();
-int exit_callback(int arg1, int arg2, void *common);
-SceKernelCallbackFunction power_callback(int unknown, int powerInfo, void *common);
-int CallbackThread(SceSize args, void *argp);
-int SetupCallbacks();
-int user_main(SceSize args, char *argp[]);
-void psp_exception_handler(PspDebugRegBlock *regs);

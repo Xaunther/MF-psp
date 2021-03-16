@@ -15,10 +15,10 @@ PREFIX          = ${shell psp-config --psp-prefix}
 TARGET = MF-psp
 
 #.o Objects to create
-OBJS = ../src/cheats.o ../src/draw.o ../src/fbm_print.o\
+OBJS = ../src/bios.o ../src/cheats.o ../src/cpu_asm.o ../src/draw.o ../src/fbm_print.o\
  ../src/gu.o ../src/gui.o ../src/homehook.o ../src/input.o ../src/main.o ../src/memory.o ../src/message.o\
- ../src/sound.o ../src/SystemButtons.o ../src/unicode.o ../src/video.o ../src/zip.o\
- ../src/pspDveManager.o
+ ../src/sound.o ../src/unicode.o ../src/video.o ../src/zip.o\
+ ../src/pspDveManager.o ../src/video_settings.o ../src/mips_stub.o
 #OBJS = ../src/control.o
 
 #Add adhoc source if requested
@@ -67,7 +67,7 @@ CFLAGS  += -DUSE_EXT_MEM
 endif
 
 #Define c++ flags and assembly flags
-LIBS += -lpspgu
+LIBS += -lpspgu -lpsprtc -lpspaudio -lpsppower
 CXXFLAGS = $(CFLAGS) $(LIBS) -std=c++2a -fno-rtti
 ASFLAGS = $(CFLAGS)
 #Add EBOOT.PBP and the corresponding PRX module

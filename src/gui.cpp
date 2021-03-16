@@ -290,7 +290,7 @@ static int sort_function(const void *dest_str_ptr, const void *src_str_ptr)
 /*--------------------------------------------------------
   Read general-purpose files
 --------------------------------------------------------*/
-s32 load_file(char **wildcards, char *result, char *default_dir_name)
+s32 load_file(const char **wildcards, char *result, char *default_dir_name)
 {
     DIR *current_dir;
     struct dirent *current_file;
@@ -1342,7 +1342,7 @@ void menu::menu_quit(MENU_TYPE *main_menu, u16 *original_screen)
 
 void menu::menu_load(MENU_TYPE *main_menu, u16 *original_screen)
 {
-    char *file_ext[] = {".gba", ".bin", ".zip", NULL};
+    const char *file_ext[] = {".gba", ".bin", ".zip", NULL};
     char load_filename[MAX_FILE];
 
     save_config_file();
@@ -1423,7 +1423,7 @@ void menu::menu_load_state(MENU_TYPE *main_menu, u16 *original_screen)
 
 void menu::menu_load_state_file(MENU_TYPE *main_menu, u16 *original_screen)
 {
-    char *file_ext[] = {".svs", NULL};
+    const char *file_ext[] = {".svs", NULL};
     char load_filename[512];
     if (load_file(file_ext, load_filename, g_default_save_dir) != -1)
     {
@@ -1447,7 +1447,7 @@ void menu::menu_load_state_file(MENU_TYPE *main_menu, u16 *original_screen)
 // Menu: Load cheat file
 void menu::menu_load_cheat_file(MENU_TYPE *main_menu, u16 *original_screen)
 {
-    char *file_ext[] = {".cht", NULL};
+    const char *file_ext[] = {".cht", NULL};
     char load_filename[MAX_FILE];
     u32 i;
 

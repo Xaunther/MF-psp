@@ -90,7 +90,7 @@ extern game_config_t g_game_config;
 /******************************************************************************
  * Decalaration of "global" functions
  ******************************************************************************/
-s32 load_file(char **wildcards, char *result, char *default_dir_name);
+s32 load_file(const char **wildcards, char *result, char *default_dir_name);
 void load_game_config_file(void);
 s32 load_config_file();
 s32 save_game_config_file();
