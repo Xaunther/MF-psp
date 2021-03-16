@@ -157,5 +157,5 @@ all:
 	@mkdir -p ../build/GBA/SS
 	cp ../cfg/* ../build/cfg/
 	cp ../font/* ../build/font/
-	cp ./*.prx ../obj
-	cp ./*.PBP ../obj
+	cp ./*.prx ../build
+	cp ./*.PBP ../build
